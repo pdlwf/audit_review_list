@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>R&D Capability Assessment – 研发能力审核（含雷达图）</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft Yahei",sans-serif;margin:24px;color:#111}
+  h1,h2{margin:0 0 12px}
+  .desc{color:#555;margin-bottom:18px}
+  .grid{display:grid;gap:18px}
+  .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{border-top:1px solid #eee;padding:10px;vertical-align:top}
+  th{background:#fafafa;text-align:left}
+  .mod-head{display:flex;justify-content:space-between;align-items:center}
+  .badge{background:#eef6ff;color:#0366d6;border:1px solid #cfe3ff;padding:2px 8px;border-radius:999px;font-size:12px}
+  .pill{padding:2px 8px;border-radius:8px;background:#f6f6f6;border:1px solid #eaeaea;font-size:12px;color:#444}
+  .scorebox{width:64px}
+  .notes{width:100%}
+  .footer{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .legend{font-size:12px;color:#555}
+  .muted{color:#777}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi > div{background:#fafafa;border:1px solid #eee;border-radius:10px;padding:10px;text-align:center}
+  .ok{color:#0a7a34}
+  .warn{color:#b45309}
+  .risk{color:#b91c1c}
+  .stickybar{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;padding:10px 0;margin:-10px 0 14px}
+  .btn{cursor:pointer;border:1px solid #ddd;background:#fff;border-radius:8px;padding:8px 12px}
+  .btn:hover{background:#f6f6f6}
+</style>
+</head>
+<body>
+  <div class="stickybar footer">
+    <button class="btn" onclick="resetScores()">清空分数</button>
+    <button class="btn" onclick="exportJSON()">导出 JSON</button>
+    <span class="legend">评分尺度：1 无系统｜2 非正式｜3 有文件并执行｜4 有效运行且闭环｜5 自动化数据驱动</span>
+  </div>
+
+  <h1>研发能力审核 R&D Capability Assessment</h1>
+  <p class="desc">目标：确认供应商从产品定义、设计、验证到制造导入全链路内建质量与可靠性，风险受控、供应可得、测试覆盖充分，并以数据驱动持续改进。</p>
+
+  <div id="modules" class="grid"></div>
+
+  <div class="card">
+    <h2>汇总与雷达图</h2>
+    <div class="kpi" id="kpi"></div>
+    <canvas id="radar" height="180"></canvas>
+    <p class="muted">提示：各模块得分为该模块问题的<strong>平均分</strong>（满分 5）。建议门槛：<span class="ok">≥4.0</span> 合格；<span class="warn">3.0–3.9</span> 需整改计划；<span class="risk">&lt;3.0</span> 高风险。</p>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
+<script>
+/** 模块与问题定义（已整合我们前面讨论的所有细化点） **/
+const MODEL = [
+  {
+    key:"org",
+    name:"1. 研发组织与资源",
+    intent:"确认组织健全、职责清晰、胜任力与培训体系完善",
+    questions:[
+      "是否有独立研发组织（软/硬/结构/测试/Reliability）与清晰R&R？",
+      "是否建立关键岗位胜任力矩阵/资格认证（RF/Camera/EMC/热/可靠性）？",
+      "是否开展持续培训（IPC/ESD/可靠性/法规/客户特殊要求），并保留记录？",
+      "是否有岗位冗余/带班机制，避免单点人员风险？"
+    ]
+  },
+  {
+    key:"process",
+    name:"2. 研发流程与标准（NPI/IPD）",
+    intent:"确认端到端流程文件化并与合规/客户标准对齐",
+    questions:[
+      "是否有端到端NPI流程（需求→架构→设计→验证→移交 ？",
+      "是否有建立设计规范，如PCB设计，ESD设计规范 ？",
+      "对外部输入（客户/法规/PCN）是否建立变更感知与落地机制？"
+    ]
+  },
+  {
+    key:"design",
+    name:"3. 设计质量与可靠性（含前期物料选型与准入）",
+    intent:"确认设计阶段内建可靠性与可制造性，并以规范与证据闭环",
+    questions:[
+      // 3.1 目标与准则
+      "【目标&准则】是否形成《可靠性需求说明书》（场景/寿命/RMA/ppm/质保期）并量化？",
+      "【目标&准则】EVT/DVT/PVT各阶段是否定义清晰的Entry/Exit？",
+      // 3.2 选型与降额（含AVL/二供）
+      "【选型/降额】是否有《元器件选型规范》与AVL（合格供应商清单）？",
+      "【选型/降额】关键器件是否执行降额（电压/电流/功耗/温度）并留有裕量表？",
+      "【选型/降额】是否有EOL/PCN预警与替代方案，关键物料二供落实并通过样件验证？",
+      // 3.3 ESD/EMC 设计
+      "【ESD/EMC】是否有ESD/EMC设计规范（器件/布局/接地/回路），并对接口配置TVS/滤波？",
+      "【ESD/EMC】是否进行ESD/EMC预验证（含目标等级，如IEC 61000-4-2），并保留记录？",
+      // 3.4 热与结构
+      "【热&结构】是否完成热仿真（稳态/瞬态）与实测温升对比，定义节流策略？",
+      "【热&结构】是否开展结构CAE/跌落/扭转与IP（防水防尘）方案评估，含盐雾/汗液？",
+      // 3.5 SI/PI 与电源安全
+      "【SI/PI】是否进行高速接口SI/PI仿真",
+      "【电源安全】充放电保护（OCP/OVP/OTP）与软硬件联动是否完成失效注入测试？",
+      // 3.6 DFM/DFA 与测试覆盖/ORT
+      "【DFM/DFA】是否进行DFM/DFA评审并形成工艺约束清单与整改闭环？",
+      "【测试覆盖】ICT/功能/老化/相机/射频测试覆盖率目标是否明确并达成？",
+      "【ORT】量产阶段是否建立ORT计划（样本量/频率/停线机制）并执行？"
+    ]
+  },
+  {
+    key:"verify",
+    name:"4. 实验验证与测试能力",
+    intent:"确认具备研发阶段验证手段与场景覆盖，且与目标/准则闭环",
+    questions:[
+      "是否建立覆盖功能/性能/可靠性/合规的测试矩阵，并与Entry/Exit对齐？",
+      "是否具备关键实验室/仪器（EMC/安规/ESD/热像/相机SFR/射频）或合格外部实验室？",
+      "是否开展环境与寿命测试（ALT/高低温循环/高湿/盐雾/汗液），并建立寿命预测模型？",
+    ]
+  },
+  {
+    key:"scm",
+    name:"5. 研发与供应链协同（DFM/DFA/早期导入）",
+    intent:"确认设计阶段即考虑可制造性、可装配性与可得性，二供与工装同步",
+    questions:[
+      "是否进行跨部门DFM/DFA评审（RD/ME/PE/QA/SCM），结论与整改闭环？",
+      "早期供应商参与（ESI）：产能/交期/生命周期/替代评估是否纳入设计约束？",
+      "关键物料二供策略是否在设计阶段完成等效性验证（功能/可靠性/一致性）？",
+      "试产前工装/治具/ICT/FCT需求与验收标准是否明确并完成验收？"
+    ]
+  },
+  {
+    key:"change",
+    name:"6. 变更与配置管理（ECN/BOM/版本）",
+    intent:"确认研发变更受控、版本与样机/批次可双向追溯",
+    questions:[
+      "需求/设计变更是否执行ECR→ECN流程并进行成本/进度/质量影响评估？",
+      "BOM/图纸/固件是否在PLM/ALM中实现单一数据源与权限控制？",
+      "样机/批次与版本是否可双向追溯（Where Used/As-built）？",
+      "对客户/生产/供应商的PCN/SCN通知机制是否明确且可审计？"
+    ]
+  },
+  {
+    key:"risk",
+    name:"7. 风险管控（技术/进度/合规）",
+    intent:"确认从立项起持续识别、量化并处置风险，设置缓冲与熔断机制",
+    questions:[
+      "是否建立项目风险台账（技术/供应/合规/资源），并对风险进行Impact×Probability量化？",
+      "是否为关键风险建立Plan B/C（替代方案/降级策略/二供切换）并有演练记录？"
+    ]
+  },
+  {
+    key:"perf",
+    name:"8. 研发绩效与持续改进",
+    intent:"确认以数据驱动提升效率与质量，客户反馈闭环到设计",
+    questions:[
+      "是否设定并跟踪研发KPI（一期通过率/缺陷密度/按期率/返工率/RMA/ppm）？",
+      "是否开展项目复盘/LL（Lessons Learned）并沉淀为设计与工艺标准？",
+    ]
+  }
+];
+
+/** 动态渲染清单 **/
+const host = document.getElementById('modules');
+MODEL.forEach((m, mi) => {
+  const card = document.createElement('div');
+  card.className='card';
+  card.innerHTML = `
+    <div class="mod-head">
+      <h2>${m.name}</h2>
+      <span class="badge" title="${m.intent}">目的：${m.intent}</span>
+    </div>
+    <table>
+      <thead><tr><th style="width:44px">#</th><th>问题（Questions）</th><th style="width:110px">得分(1-5)</th><th>证据/备注</th></tr></thead>
+      <tbody>
+        ${m.questions.map((q, qi) => `
+          <tr>
+            <td>${qi+1}</td>
+            <td>${q}</td>
+            <td>
+              <select class="scorebox" data-module="${m.key}" onchange="recalc()">
+                <option value="">—</option>
+                <option value="1">1 无系统</option>
+                <option value="2">2 非正式</option>
+                <option value="3">3 有文件并执行</option>
+                <option value="4">4 有效运行且闭环</option>
+                <option value="5">5 自动化数据驱动</option>
+              </select>
+            </td>
+            <td><input class="notes" placeholder="证据/链接/记录编号（如：DFMEA#2025-03, DRR纪要, TVS选型表 等）"/></td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div class="footer">
+      <span class="pill">模块均分：<b id="avg-${m.key}">—</b></span>
+      <span class="muted">（空白项不计入均分）</span>
+    </div>
+  `;
+  host.appendChild(card);
+});
+
+/** 汇总与雷达图 **/
+const kpiBox = document.getElementById('kpi');
+function kpiCell(lbl, val){
+  const color = (val>=4)?'ok':(val>=3?'warn':'risk');
+  return `<div><div class="muted">${lbl}</div><div class="${color}" style="font-size:20px;font-weight:700">${isNaN(val)?'—':val.toFixed(2)}</div></div>`;
+}
+
+const ctx = document.getElementById('radar').getContext('2d');
+const radar = new Chart(ctx,{
+  type:'radar',
+  data:{
+    labels: MODEL.map(m=>m.name.replace(/^\d+\.\s*/,'')),
+    datasets:[{
+      label:'模块得分',
+      data: new Array(MODEL.length).fill(0),
+      fill:true,
+      borderWidth:2,
+      pointRadius:3
+    }]
+  },
+  options:{
+    responsive:true,
+    scales:{ r:{ min:0, max:5, ticks:{stepSize:1} } },
+    plugins:{ legend:{display:false} }
+  }
+});
+
+function recalc(){
+  const avgs=[];
+  MODEL.forEach((m, idx)=>{
+    const selects=[...document.querySelectorAll(`select[data-module="${m.key}"]`)];
+    const nums=selects.map(s=>Number(s.value)).filter(v=>!isNaN(v) && v>0);
+    const avg = nums.length? nums.reduce((a,b)=>a+b,0)/nums.length : NaN;
+    document.getElementById(`avg-${m.key}`).textContent = isNaN(avg)?'—':avg.toFixed(2);
+    avgs[idx]= isNaN(avg)? 0 : Number(avg.toFixed(2));
+  });
+  // 更新雷达
+  radar.data.datasets[0].data = avgs.map(v=>v||0);
+  radar.update();
+
+  // KPI 概览
+  const overall = avgs.filter(v=>v>0).length? (avgs.reduce((a,b)=>a+b,0)/avgs.filter(v=>v>0).length) : NaN;
+  kpiBox.innerHTML = 
+    kpiCell('总体均分', overall) +
+    MODEL.map((m,i)=>kpiCell(m.name.split(' ')[0], avgs[i]||NaN)).join('');
+}
+recalc();
+
+function resetScores(){
+  document.querySelectorAll('select.scorebox').forEach(s=>s.value="");
+  document.querySelectorAll('input.notes').forEach(n=>n.value="");
+  recalc();
+}
+function exportJSON(){
+  const payload = { modules: [] };
+  MODEL.forEach(m=>{
+    const rows=[...document.querySelectorAll(`select[data-module="${m.key}"]`)].map((s,idx)=>({
+      q: MODEL.find(mm=>mm.key===m.key).questions[idx],
+      score: Number(s.value||0),
+      note: s.closest('tr').querySelector('input.notes').value||""
+    }));
+    const scores=rows.map(r=>r.score).filter(v=>v>0);
+    const avg = scores.length? scores.reduce((a,b)=>a+b,0)/scores.length : 0;
+    payload.modules.push({ key:m.key, name:m.name, intent:m.intent, avg: Number(avg.toFixed(2)), rows });
+  });
+  const blob = new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = "rd_capability_assessment.json";
+  a.click();
+}
+</script>
+</body>
+</html>
