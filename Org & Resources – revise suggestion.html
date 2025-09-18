@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>研发组织与资源 – 修改提案 v2</title>
+<style>
+ body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft Yahei",sans-serif;margin:24px;color:#111}
+ h1,h2,h3{margin:0 0 12px}
+ .muted{color:#666}
+ .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin:14px 0}
+ .tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:8px}
+ .keep{background:#e8f7ef;color:#046a38;border:1px solid #c7ead8}
+ .drop{background:#fdecec;color:#b91c1c;border:1px solid #f8c5c5}
+ .pend{background:#fff7e6;color:#a15c00;border:1px solid #f6d8a8}
+ ul{margin:6px 0 0 18px}
+ .section{margin-top:18px}
+ .chk{margin-right:6px}
+ .grid{display:grid;gap:10px}
+ .grid-2{grid-template-columns:1fr 1fr}
+ .small{font-size:12px;color:#555}
+ .sep{height:1px;background:#eee;margin:12px 0}
+</style>
+</head>
+<body>
+  <h1>模块：1. 研发组织与资源（修改提案 v2）</h1>
+  <p class="muted">目的：不直接改动现有 Canvas。先在此处记录“保留/删除/待定”的条目与审核口径，待你确认后再合并。</p>
+
+  <div class="card">
+    <h2>你的选择（已采纳到本提案）</h2>
+    <p>保留条目：<strong>#1、#2、#4、#5</strong></p>
+    <p>不保留（本轮不纳入）：<strong>#3、#6、#7、#8</strong></p>
+    <div class="small">注：这里的编号对应本次建议清单（v2）中的条目编号，不是原 Canvas 的行号。</div>
+  </div>
+
+  <div class="card">
+    <h2>保留条目（详细口径）</h2>
+
+    <div class="section">
+      <h3>#1 组织边界与职责清晰度 <span class="tag keep">保留</span></h3>
+      <ul>
+        <li><strong>审计要点</strong>：软/硬/结构/测试/可靠性团队完备；R&R 清晰；跨团队接口（ME/PE/QA/SCM/EMS/ODM）定义明确。</li>
+        <li><strong>期望证据</strong>：组织架构图、RACI/RASCI、接口与升级路径说明、代表性评审签到。</li>
+        <li><strong>评分提示</strong>：RACI 明确且覆盖到每个子系统，评审中无职责争议 &rarr; ≥4；若长期口头约定、无书面边界 &rarr; ≤2。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>#2 关键岗位胜任力矩阵 <span class="tag keep">保留</span></h3>
+      <ul>
+        <li><strong>审计要点</strong>：RF/Camera/EMC/热/可靠性等关键域有胜任力要求与在岗覆盖；核心岗位后备人选。</li>
+        <li><strong>期望证据</strong>：Competency Matrix、岗位说明书、任职资格评审记录、关键域覆盖清单。</li>
+        <li><strong>评分提示</strong>：矩阵更新及时、覆盖全部在研机种 &rarr; ≥4；仅岗位描述、无能力等级与评审 &rarr; ≤2。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>#4 领域覆盖与 DRI（单一责任人）清单 <span class="tag keep">保留</span></h3>
+      <ul>
+        <li><strong>审计要点</strong>：按手机子系统（射频/电源/相机/显示/热/结构/天线/音频/充电/安全等）设定 DRI，并明确决策权限。</li>
+        <li><strong>期望证据</strong>：Subsystem Ownership Map、DRI 权限矩阵、评审缺席替代机制、越权处置记录。</li>
+        <li><strong>评分提示</strong>：DRI 覆盖完整、权责匹配、替代机制有效 &rarr; ≥4；DRI 名单缺失或名不副实 &rarr; ≤2。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3>#5 技术治理与决策权边界（DRB/CCB）<span class="tag keep">保留</span></h3>
+      <ul>
+        <li><strong>审计要点</strong>：设计评审委员会（DRB）与变更控制委员会（CCB）章程、独立性与否决权；质量方具备 Stop-Build/Stop-Ship 建议权。</li>
+        <li><strong>期望证据</strong>：DRB/CCB 章程、成员清单、评审纪要、被否决或退回案例与纠偏记录。</li>
+        <li><strong>评分提示</strong>：近 2 季度存在有效否决/纠偏案例并留痕 &rarr; ≥4；会议流于形式、无否决记录 &rarr; ≤2。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>不纳入本轮的条目（记录原因）</h2>
+    <div class="section">
+      <h3>#3 资源/产能规划与负载匹配 <span class="tag pend">待定</span></h3>
+      <ul>
+        <li><strong>建议</strong>：该条偏向 PMO/组合管理，可后续在“风险与绩效”模块统一纳管，避免重复。</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h3>#6 工具链与数据主线（PLM/ALM/Repo/Req） <span class="tag pend">待定</span></h3>
+      <ul>
+        <li><strong>建议</strong>：如你想保持模块聚焦，可在“变更与配置管理”模块强化，而非放在组织与资源。</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h3>#7 实验/试制资源保障（SLA/校准） <span class="tag pend">待定</span></h3>
+      <ul>
+        <li><strong>建议</strong>：与“实验验证与测试能力”模块存在交叉，建议放至该模块并且与设备台账打通。</li>
+      </ul>
+    </div>
+    <div class="section">
+      <h3>#8 外包/协作方管理 <span class="tag pend">待定</span></h3>
+      <ul>
+        <li><strong>建议</strong>：可并入“供应链与协同/采购”模块，统一审外部交付的准入与放行。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>原 Canvas 中建议删除的旧条目（仅记录，不执行）</h2>
+    <ul>
+      <li>旧#3：持续培训与考核 <span class="tag drop">建议移出</span>（可迁至“绩效与持续改进”模块作为改进抓手）。</li>
+      <li>旧#4：岗位冗余/带班 <span class="tag drop">建议移出</span>（用“DRI清单+资源匹配”替代，减少形式化检查）。</li>
+    </ul>
+    <div class="small">说明：此处只是变更记录，待你确认后再对主清单做同步修改。</div>
+  </div>
+
+  <div class="card">
+    <h2>你的决定</h2>
+    <label><input class="chk" type="checkbox" /> 确认：保留 #1/#2/#4/#5；其余条目暂不纳入本模块</label>
+    <div class="sep"></div>
+    <label><input class="chk" type="checkbox" /> 需要：将 #6 合并到“变更与配置管理”模块</label><br/>
+    <label><input class="chk" type="checkbox" /> 需要：将 #7 合并到“实验验证与测试能力”模块</label><br/>
+    <label><input class="chk" type="checkbox" /> 需要：将 #8 合并到“供应链协同/采购”相关模块</label>
+    <p class="muted small">（在这里打勾即可作为变更指令记录；真正的合并动作等你确认后再对 Canvas 执行）</p>
+  </div>
+</body>
+</html>
