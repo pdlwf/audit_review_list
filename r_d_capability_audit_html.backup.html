@@ -16,7 +16,7 @@
   .mod-head{display:flex;justify-content:space-between;align-items:center}
   .badge{background:#eef6ff;color:#0366d6;border:1px solid #cfe3ff;padding:2px 8px;border-radius:999px;font-size:12px}
   .pill{padding:2px 8px;border-radius:8px;background:#f6f6f6;border:1px solid #eaeaea;font-size:12px;color:#444}
-  .scorebox{width:64px}
+  select.scorebox{min-width:280px}
   .notes{width:100%}
   .footer{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
   .legend{font-size:12px;color:#555}
@@ -830,6 +830,36 @@ fetch('revise/revise.md')
   .then(text=>applyReviseMeta(text))
   .catch(()=>{});
 
+// Build a single <option> using rubric text for level n; fallback to generic label if missing
+function optionHtml(n, text){
+  const FALLBACK = {
+    1: '1 无系统',
+    2: '2 非正式',
+    3: '3 有文件并执行',
+    4: '4 有效运行且闭环',
+    5: '5 自动化数据驱动'
+  };
+  const label = text ? `${n} ${text}` : FALLBACK[n];
+  // title attribute helps show full text on hover if select text is truncated
+  return `<option value="${n}" title="${text ? (n + ' ' + text) : FALLBACK[n]}">${label}</option>`;
+}
+
+// Render a scorebox for module key + question index, pulling per-question rubric first
+function renderScorebox(modKey, qIndex){
+  const module = MODEL.find(m => m.key === modKey);
+  const q = module && module.questions ? module.questions[qIndex] : null;                 // q can be a string or an object {text, rubric, meta...}
+  const rubric = (q && q.rubric)
+              || (window.RUBRICS && RUBRICS[modKey] && RUBRICS[modKey][qIndex])
+              || null;
+
+  return `
+    <select class="scorebox" data-module="${modKey}" data-index="${qIndex}" onchange="recalc()">
+      <option value="">—</option>
+      ${[1,2,3,4,5].map(n => optionHtml(n, rubric ? rubric[String(n)] : null)).join('')}
+    </select>
+  `;
+}
+
 /** 动态渲染清单 **/
 const host = document.getElementById('modules');
 MODEL.forEach((m, mi) => {
@@ -854,15 +884,8 @@ MODEL.forEach((m, mi) => {
                 </ul>
               </details>
             </td>
-            <td>
-              <select class="scorebox" data-module="${m.key}" onchange="recalc()">
-                <option value="">—</option>
-                <option value="1">1 无系统</option>
-                <option value="2">2 非正式</option>
-                <option value="3">3 有文件并执行</option>
-                <option value="4">4 有效运行且闭环</option>
-                <option value="5">5 自动化数据驱动</option>
-              </select>
+            <td class="score-cell">
+              ${renderScorebox(m.key, qi)}
             </td>
             <td><input class="notes" placeholder="证据/链接/记录编号（如：DFMEA#2025-03, DRR纪要, TVS选型表 等）"/></td>
           </tr>
@@ -1022,15 +1045,19 @@ function exportJSON(){
   const payload = { modules: [] };
   MODEL.forEach(m=>{
     // 导出时同步题目文本与逐级打分口径，确保数据闭环
+    const moduleDef = MODEL.find(mm=>mm.key===m.key);
     const rows=[...document.querySelectorAll(`select[data-module="${m.key}"]`)].map((s,idx)=>{
       const tr = s.closest('tr');
-      const qObj = m.questions[idx];
-      const meta = qObj.meta || {};
+      const qObj = moduleDef && moduleDef.questions ? moduleDef.questions[idx] : null;
+      const meta = (qObj && qObj.meta) || {};
+      const rubric = (qObj && qObj.rubric)
+                  || (window.RUBRICS && RUBRICS[m.key] && RUBRICS[m.key][idx])
+                  || null;
       return {
-        q: qObj.text,
+        q: (qObj && qObj.text) ? qObj.text : qObj,
         score: Number(s.value||0),
         note: tr.querySelector('input.notes').value||"",
-        rubric: {...qObj.rubric},
+        rubric: rubric,
         meta:{
           focus: Array.isArray(meta.focus)?[...meta.focus]:[],
           ask: Array.isArray(meta.ask)?[...meta.ask]:[],
