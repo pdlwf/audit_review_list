@@ -316,9 +316,34 @@ function defaultMeta(modKey, text){
 }
 
 function decorateModel(){
+  const KEYS = ['focus','ask','evidence','threshold'];
   MODEL.forEach(module=>{
-    module.questions.forEach((q,idx)=>{
-      q.meta = defaultMeta(module.key, q.text);
+    module.questions.forEach((q, idx)=>{
+      if(typeof q === 'string'){
+        q = { text: q };
+        module.questions[idx] = q;
+      }
+      const fallback = defaultMeta(module.key, q.text);
+      if(!q.meta){
+        q.meta = fallback;
+      } else {
+        KEYS.forEach(key=>{
+          const arr = Array.isArray(q.meta[key])
+            ? q.meta[key].map(item => (typeof item === 'string' ? item.trim() : item)).filter(Boolean)
+            : [];
+          let unique = Array.from(new Set(arr));
+          if(unique.length > 1){
+            unique = unique.filter(item => item !== '（暂无条目）');
+          }
+          if(!unique.length){
+            q.meta[key] = [...fallback[key]];
+          } else if(unique.length === 1 && unique[0] === '（暂无条目）' && module.key !== 'design'){
+            q.meta[key] = [...fallback[key]];
+          } else {
+            q.meta[key] = unique;
+          }
+        });
+      }
       q._normKey = normalizeKey(q.text);
       q._index = idx;
     });
@@ -824,6 +849,63 @@ const MODEL = [
   }
 ];
 
+(function normalizeDesignQuestions(){
+  const design = MODEL.find(m => m.key === 'design');
+  if(!design) return;
+
+  function liTextsFromUl(ulHtml){
+    return Array.from(ulHtml.matchAll(/<li>([\s\S]*?)<\/li>/gi))
+      .map(m => m[1].replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim())
+      .filter(Boolean);
+  }
+
+  function distributeToMeta(liList){
+    const meta = { focus:[], ask:[], evidence:[], threshold:[] };
+    liList.forEach(t => {
+      const s = t.trim();
+      if (/^(关注点|要点)[:：]/.test(s)) {
+        meta.focus.push(s.replace(/^[^:：]+[:：]\s*/, '').trim() || s);
+      } else if (/^(怎么问|问法|如何确认)[:：]/.test(s)) {
+        meta.ask.push(s.replace(/^[^:：]+[:：]\s*/, '').trim() || s);
+      } else if (/^(期望证据|证据|证明材料)[:：]/.test(s)) {
+        const rest = s.replace(/^[^:：]+[:：]\s*/, '').trim() || s;
+        rest.split(/[、，,；;]/).map(x=>x.trim()).filter(Boolean).forEach(x=>meta.evidence.push(x));
+      } else if (/^(建议门槛|门槛|判定标准|目标等级)[:：]/.test(s)) {
+        const rest = s.replace(/^[^:：]+[:：]\s*/, '').trim() || s;
+        rest.split(/[、，,；;]/).map(x=>x.trim()).filter(Boolean).forEach(x=>meta.threshold.push(x));
+      } else {
+        meta.focus.push(s);
+      }
+    });
+    ['focus','ask','evidence','threshold'].forEach(k=>{
+      meta[k] = Array.from(new Set(meta[k]));
+    });
+    return meta;
+  }
+
+  design.questions.forEach(q => {
+    const html = String(q.text || '');
+    const ulMatch = html.match(/<ul[\s\S]*?<\/ul>/i);
+    const titleOnly = html.replace(/<ul[\s\S]*?<\/ul>/gi, '').trim();
+    q.text = titleOnly || (q.text && q.text.replace(/<[^>]+>/g,' ').trim()) || q.text;
+
+    const baseMeta = q.meta || { focus:[], ask:[], evidence:[], threshold:[] };
+    if(ulMatch){
+      const ulHtml = ulMatch[0];
+      const li = liTextsFromUl(ulHtml);
+      const parsed = distributeToMeta(li);
+      ['focus','ask','evidence','threshold'].forEach(k=>{
+        const set = new Set([...(baseMeta[k]||[]), ...(parsed[k]||[])].filter(Boolean));
+        baseMeta[k] = Array.from(set);
+      });
+    }
+    ['focus','ask','evidence','threshold'].forEach(k=>{
+      baseMeta[k] = baseMeta[k] && baseMeta[k].length ? baseMeta[k] : ['（暂无条目）'];
+    });
+    q.meta = baseMeta;
+  });
+})();
+
 decorateModel();
 fetch('revise/revise.md')
   .then(res=>res.ok?res.text():Promise.reject())
@@ -873,23 +955,31 @@ MODEL.forEach((m, mi) => {
     <table>
       <thead><tr><th style="width:44px">#</th><th>问题（Questions）</th><th style="width:110px">得分(1-5)</th><th>证据/备注</th></tr></thead>
       <tbody>
-        ${m.questions.map((q, qi) => `
+        ${m.questions.map((question, qi) => {
+          const q = (typeof question === 'string') ? { text: question } : question;
+          const qText = q && q.text ? q.text : '';
+          const rubric = q && q.rubric ? q.rubric : null;
+          const rubricHtml = rubric ? `
+              <details class="rubric"><summary>查看打分口径</summary>
+                <ul>
+                  ${['1','2','3','4','5'].map(level => `<li><b>${level}分：</b>${rubric[level] || ''}</li>`).join('')}
+                </ul>
+              </details>
+            ` : '';
+          return `
           <tr>
             <td>${qi+1}</td>
             <td class="qtext" data-module="${m.key}" data-index="${qi}" tabindex="0">
-              <div>${q.text}</div>
-              <details class="rubric"><summary>查看打分口径</summary>
-                <ul>
-                  ${['1','2','3','4','5'].map(level => `<li><b>${level}分：</b>${q.rubric[level]}</li>`).join('')}
-                </ul>
-              </details>
+              <div>${qText}</div>
+              ${rubricHtml}
             </td>
             <td class="score-cell">
               ${renderScorebox(m.key, qi)}
             </td>
             <td><input class="notes" placeholder="证据/链接/记录编号（如：DFMEA#2025-03, DRR纪要, TVS选型表 等）"/></td>
           </tr>
-        `).join('')}
+          `;
+        }).join('')}
       </tbody>
     </table>
     <div class="footer">
@@ -928,7 +1018,7 @@ const radar = new Chart(ctx,{
 });
 
 function getMeta(modKey, idx){
-  const fallback = { focus:['暂无'], ask:['暂无'], evidence:['暂无'], threshold:['暂无'] };
+  const fallback = { focus:['（暂无条目）'], ask:['（暂无条目）'], evidence:['（暂无条目）'], threshold:['（暂无条目）'] };
   const module = MODEL.find(m=>m.key===modKey);
   const question = module && module.questions[idx];
   if(!question) return fallback;
