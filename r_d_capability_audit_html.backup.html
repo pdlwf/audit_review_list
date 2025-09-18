@@ -33,10 +33,6 @@
   details.rubric summary{cursor:pointer;color:#0366d6}
   details.rubric ul{margin:6px 0 0 18px;padding:0;list-style:disc}
   details.rubric li{margin-bottom:4px}
-  #hovercard{position:fixed;z-index:9999;max-width:420px;background:#111;color:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:12px 14px;font-size:13px;line-height:1.5;display:none}
-  #hovercard h5{margin:6px 0 4px;font-size:12px;color:#a7c7ff}
-  #hovercard ul{margin:0 0 6px 16px;padding:0}
-  #hovercard[aria-hidden="false"]{display:block}
 </style>
 </head>
 <body>
@@ -51,8 +47,6 @@
 
   <div id="modules" class="grid"></div>
 
-  <div id="hovercard" role="tooltip" aria-hidden="true"></div>
-
   <div class="card">
     <h2>汇总与雷达图</h2>
     <div class="kpi" id="kpi"></div>
@@ -63,398 +57,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
 <script>
 /** 模块与问题定义（根据 revise.md 同步结构与口径） **/
-// 元信息模板，按问题关键词生成默认关注点/问法/证据/门槛
-const META_TEMPLATES = {
-  general:{
-    focus:["确认流程、职责与证据链闭环"],
-    ask:["当前机制如何运行？有哪些量化指标？"],
-    evidence:["制度文件或台账","执行记录与例会纪要"],
-    threshold:["形成文件化机制并可持续复用"]
-  },
-  orgBoundary:{
-    focus:["组织架构与岗位说明书是否发布","跨团队接口人和升级路径是否明确","职责边界与权限如何维护"],
-    ask:["组织架构多长时间更新一次？","跨团队升级路径和 SLA 如何定义？"],
-    evidence:["最新组织架构图与岗位说明","接口/升级流程记录"],
-    threshold:["组织职责发布并可查询","升级路径在项目中可验证"]
-  },
-  competency:{
-    focus:["关键岗位胜任力模型覆盖度","认证/培训闭环","能力缺口与资源备份计划"],
-    ask:["胜任力矩阵包含哪些岗位？","培训与认证记录如何管理？"],
-    evidence:["胜任力矩阵与更新记录","培训/认证计划与考试结果"],
-    threshold:["关键岗位均建立胜任力要求","能力缺口形成行动并跟踪"]
-  },
-  driList:{
-    focus:["子系统 DRI 清单准确性","权限与备份机制","变更同步与覆盖缺口"],
-    ask:["DRI 清单如何维护和发布？","变更时如何确认 DRI 覆盖？"],
-    evidence:["DRI 名单与权限说明","变更同步或排班记录"],
-    threshold:["关键子系统均指定 DRI","缺口补位有记录并闭环"]
-  },
-  governance:{
-    focus:["DRB/CCB 章程与议题管理","Stop-Build 建议权与执行","技术决策与指标挂钩"],
-    ask:["DRB/CCB 多久召开一次？","Stop-Build 建议如何触发与闭环？"],
-    evidence:["DRB/CCB 议程与纪要","风险或指标触发记录"],
-    threshold:["技术治理例会常态化","决策与整改均有审计记录"]
-  },
-  npiFlow:{
-    focus:["端到端流程阶段与交付物","角色职责与门禁判定","流程执行记录与复盘"],
-    ask:["NPI 流程的关键 Gate 是哪些？","Entry/Exit 判定如何落地？"],
-    evidence:["流程文档/流程图","阶段评审纪要与交付物清单"],
-    threshold:["端到端流程文件化并执行","关键 Gate 结果可追溯"]
-  },
-  designSpec:{
-    focus:["设计规范覆盖领域","版本管理与发布机制","培训与稽核联动"],
-    ask:["规范如何归档与受控？","版本更新如何通知到项目？"],
-    evidence:["规范清单/版本记录","培训签到或稽核报告"],
-    threshold:["关键设计规范受控且及时更新"]
-  },
-  externalChange:{
-    focus:["客户/法规输入感知机制","影响评估与责任划分","实施与验证闭环"],
-    ask:["外部输入如何捕获并派发？","影响评估包含哪些维度？"],
-    evidence:["外部输入台账","评估与落实计划"],
-    threshold:["关键外部输入均评估并形成验证计划"]
-  },
-  esd:{
-    focus:["TVS 选型与夹持电压","回流路径与接地策略","接口目标 ESD/Surge 等级","Latch-up 与带电插拔风险"],
-    ask:["目标 ESD/Surge 等级是多少？","关键接口的 TVS BOM 与布局如何验证？","是否进行带电插拔/EFT/Latch-up 预验证？"],
-    evidence:["IEC 61000-4-2 预验证记录","JESD78 Latch-up 报告","接口布局截图与器件曲线"],
-    threshold:["接触放电≥8kV，空气放电≥15kV","异常失效注入通过且无复位"]
-  },
-  wcca:{
-    focus:["环路补偿相位/增益裕量","上/下电时序与跨轨约束","器件容差/温漂/WCCA 分析","失效注入与充放电安全"],
-    ask:["Bode 实测数据如何？","WCCA 覆盖哪些回路？","上/下电时序如何验证？"],
-    evidence:["Bode 图与测量记录","WCCA 报告与 Worst-Case 表","上/下电时序波形与限值"],
-    threshold:["相位裕量≥45°，增益裕量≥6 dB","关键轨超限闭环并记录"]
-  },
-  pdn:{
-    focus:["PDN 目标阻抗设定","去耦电容网络与布局回路","高速接口眼图/BER 余量","仿真与板测一致性"],
-    ask:["Ztarget 如何定义与验证？","仿真与板测差异如何评估？"],
-    evidence:["PDN 仿真模型与结果","示波/VNA 测量记录","眼图或 BER 报告"],
-    threshold:["关键频段阻抗满足目标并留余量","高速接口通过协议限值"]
-  },
-  structure:{
-    focus:["跌落/扭转/点载 CAE 与实测闭环","螺钉/卡扣/胶粘疲劳","密封公差链与透气策略","盐雾/汗液等耐蚀风险"],
-    ask:["CAE 如何与实测比对？","密封公差链如何计算？"],
-    evidence:["FEA 模型与校核报告","跌落/扭转/密封测试数据"],
-    threshold:["1.5m 六面多次功能正常","IP 目标与耐蚀要求达成"]
-  },
-  thermal:{
-    focus:["稳态+瞬态 CFD 模型","测温点校准与偏差控制","散热材料与节流策略","关键场景功耗输入"],
-    ask:["仿真实测偏差控制在多少？","节流策略触发点如何设定？"],
-    evidence:["CFD 报告与边界条件","温升测试表","节流/降额曲线"],
-    threshold:["触感温度满足目标","结温低于器件上限","充电热稳定验证通过"]
-  },
-  rf:{
-    focus:["3D EM 与整机耦合分析","TRP/TIS 预算与余量","结构变更触发复核","SAR/一致性评估"],
-    ask:["仿真与 OTA 数据如何对齐？","多姿态 OTA 结果是否满足？"],
-    evidence:["EM 仿真报告","VNA/OTA 测试数据","相关性比对记录"],
-    threshold:["关键频段余量满足预算并留裕量"]
-  },
-  camera:{
-    focus:["MTF/SFR、OECF、畸变等全科目","OIS/AF 寿命验证","设备校准与 GR&R","报告追溯性"],
-    ask:["测试方法是否对标 ISO？","设备校准如何维护？"],
-    evidence:["完整相机实验室报告","原始数据与曲线","校准证书或 GR&R"],
-    threshold:["全科目覆盖且数据可追溯","与 ORT/场景数据闭环"]
-  },
-  specialSim:{
-    focus:["DFMEA 触发条件与台账","专项仿真模型与参数库","仿真-实测闭环","风险复核策略"],
-    ask:["DFMEA 高风险如何触发专项仿真？","模型如何校准与版本化？"],
-    evidence:["专项仿真报告与模型文件","验证对比记录"],
-    threshold:["高风险项均建立仿真验证闭环"]
-  },
-  testMatrix:{
-    focus:["功能/性能/可靠性覆盖矩阵","Entry/Exit 与停线规则","缺口识别与整改计划"],
-    ask:["矩阵如何维护并与项目联动？","Entry/Exit 判定依据是什么？"],
-    evidence:["测试矩阵或 coverage 报告","异常整改台账"],
-    threshold:["关键场景覆盖率达成且缺口闭环"]
-  },
-  labCapability:{
-    focus:["关键实验室/仪器配置","校准与资质维护","外部实验室评估","产能与排期"],
-    ask:["仪器校准周期如何管理？","外部实验室资质如何评估？"],
-    evidence:["仪器清单与校准记录","实验室资质或委外合同"],
-    threshold:["关键试验能力满足项目需求","产能/排期可量化管理"]
-  },
-  envLife:{
-    focus:["环境/寿命测试矩阵","应力条件与判据","寿命模型与数据回写"],
-    ask:["ALT/循环测试覆盖哪些工况？","寿命模型如何建立并校准？"],
-    evidence:["环境/寿命测试报告","寿命模型或拟合曲线"],
-    threshold:["关键环境应力测试完成并通过","寿命模型与实测数据闭环"]
-  },
-  dfm:{
-    focus:["跨部门 DFM/DFA 评审机制","问题清单与整改闭环","制造约束纳入设计基线"],
-    ask:["评审参与角色有哪些？","整改闭环如何追踪？"],
-    evidence:["DFM/DFA 评审纪要","整改清单与验证记录"],
-    threshold:["关键可制造风险闭环并有复盘"]
-  },
-  esi:{
-    focus:["供应商早期参与范围","产能/交期/生命周期评估","输入纳入设计约束"],
-    ask:["ESI 包含哪些关键评估？","评估结果如何反馈给设计？"],
-    evidence:["供应商评估报告","约束清单与行动计划"],
-    threshold:["产能/生命周期评估完成并落实约束"]
-  },
-  dualSource:{
-    focus:["关键物料二供策略","等效性验证覆盖功能/可靠性","切换流程与风险控制"],
-    ask:["二供验证包含哪些测试？","切换判据如何设定？"],
-    evidence:["二供验证报告","可靠性/一致性数据"],
-    threshold:["关键物料二供通过验证并备案"]
-  },
-  tooling:{
-    focus:["工装/治具/ICT/FCT 需求定义","验收标准与调试","培训与维护计划"],
-    ask:["验收标准如何量化？","试产前如何确认产能与稳定性？"],
-    evidence:["工装需求与验收记录","调试/培训纪要"],
-    threshold:["关键工装在试产前完成验收并具备量产能力"]
-  },
-  changeProcess:{
-    focus:["ECR→ECN 流程","影响评估维度","验证计划与实施跟踪"],
-    ask:["影响评估包含哪些输入？","ECN 实施状态如何追踪？"],
-    evidence:["ECR/ECN 台账","影响评估与验证记录"],
-    threshold:["所有变更均完成影响评估与验证闭环"]
-  },
-  plm:{
-    focus:["PLM/ALM 单一数据源","权限与版本控制","变更同步机制"],
-    ask:["资料如何纳入 PLM/ALM？","权限与版本如何审批？"],
-    evidence:["系统截图或配置说明","权限矩阵与操作记录"],
-    threshold:["关键数据在系统中受控且版本可追溯"]
-  },
-  traceability:{
-    focus:["样机/批次与版本对应关系","Where Used/As-built 数据","追溯查询效率"],
-    ask:["如何快速定位受影响样机？","数据是否实时更新？"],
-    evidence:["追溯系统截图","查询记录与响应时间"],
-    threshold:["样机与版本双向追溯可在系统中完成"]
-  },
-  pcn:{
-    focus:["PCN/SCN 通知流程","责任人与时限","影响评估与应对"],
-    ask:["通知流程如何触发？","如何确认对方已收到并执行？"],
-    evidence:["PCN/SCN 台账","影响评估与应对计划"],
-    threshold:["关键通知留痕并可审计"]
-  },
-  riskRegister:{
-    focus:["风险分类与台账","Impact×Probability 量化","责任人与更新频率"],
-    ask:["风险等级如何计算？","更新频率是多少？"],
-    evidence:["风险台账或系统截图","更新记录与缓解计划"],
-    threshold:["重大风险均量化并指定责任人","状态更新可追溯"]
-  },
-  contingency:{
-    focus:["Plan B/C 触发条件","演练与资源准备","降级策略与沟通机制"],
-    ask:["关键风险的应急方案有哪些？","演练与资源如何记录？"],
-    evidence:["Plan B/C 文档","演练记录或资源清单"],
-    threshold:["高风险均具备演练过的替代方案"]
-  },
-  kpi:{
-    focus:["研发 KPI 指标体系","数据采集与可视化","指标驱动改进机制"],
-    ask:["关键 KPI 如何计算？","指标异常如何触发行动？"],
-    evidence:["KPI 看板或报表","指标分析与改进行动"],
-    threshold:["核心 KPI 常态化监控并驱动改进"]
-  },
-  lessons:{
-    focus:["项目复盘节奏与范围","知识沉淀与标准回写","复用提醒与成效衡量"],
-    ask:["复盘输出如何归档？","回写标准后如何验证执行？"],
-    evidence:["复盘/LL 文档","回写标准与跟踪记录"],
-    threshold:["复盘成果沉淀并在项目中复用"]
-  }
-};
-
-// 统一生成问题元信息（默认模板）
-function applyTemplate(meta, name){
-  const tpl = META_TEMPLATES[name];
-  if(!tpl) return;
-  ['focus','ask','evidence','threshold'].forEach(key=>{
-    tpl[key].forEach(item=>{
-      if(item && !meta[key].includes(item)) meta[key].push(item);
-    });
-  });
-}
-
-function stripHTML(str){
-  return (str || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
-}
-
-function normalizeKey(str){
-  return stripHTML(str).replace(/[\s`*_~!@#$%^&()+=\-：:；;，,。！？?、<>【】\[\]]/g,'').toLowerCase();
-}
-
-function defaultMeta(modKey, text){
-  const meta={focus:[],ask:[],evidence:[],threshold:[]};
-  const plain = stripHTML(text);
-  const lower = plain.toLowerCase();
-  const applied = new Set();
-  const run = name=>{applyTemplate(meta,name);applied.add(name);};
-  if(/esd|浪涌|surge|tvs|充电口/i.test(plain)) run('esd');
-  if(/wcca|电源|环路|bode|时序|充电|放电/.test(plain)) run('wcca');
-  if(/pdn|si-?pi|眼图|高速|mipi|usb|ddr/.test(lower)) run('pdn');
-  if(/结构|冲击|跌落|密封|fea|ip/.test(plain)) run('structure');
-  if(/热|cfd|温升|节流|vc|石墨片/.test(plain)) run('thermal');
-  if(/射频|天线|ota|sar|trp|tis|rf/.test(lower)) run('rf');
-  if(/相机|mtf|sfr|oecf|ois|af/.test(lower)) run('camera');
-  if(/矩阵|entry|exit/.test(lower)) run('testMatrix');
-  if(/实验室|仪器|暗室/.test(plain)) run('labCapability');
-  if(/环境|寿命|alt|高低温|盐雾|汗液/.test(plain)) run('envLife');
-  if(/dfm|dfa/.test(lower)) run('dfm');
-  if(/供应商|esi|产能|交期|生命周期/.test(plain)) run('esi');
-  if(/二供|替代/.test(plain)) run('dualSource');
-  if(/工装|治具|ict|fct/.test(lower)) run('tooling');
-  if(/ecr|ecn|变更/.test(lower)) run('changeProcess');
-  if(/plm|alm|bom|图纸|固件/.test(lower)) run('plm');
-  if(/追溯|whereused|asbuilt|样机|批次/.test(lower)) run('traceability');
-  if(/pcn|scn|通知/.test(lower)) run('pcn');
-  if(/风险台账|impact|probability/.test(lower)) run('riskRegister');
-  if(/planb|plan c|替代方案|降级策略/.test(lower)) run('contingency');
-  if(/胜任力|能力|矩阵/.test(plain)) run('competency');
-  if(/组织|职责|边界/.test(plain)) run('orgBoundary');
-  if(/dri/.test(lower)) run('driList');
-  if(/治理|决策|drb|ccb|stop-build/.test(lower)) run('governance');
-  if(/npi|流程|里程碑/.test(lower)) run('npiFlow');
-  if(/规范|标准|设计规范/.test(plain)) run('designSpec');
-  if(/外部输入|客户|法规|pcn/.test(lower)) run('externalChange');
-  if(/kpi/.test(lower)) run('kpi');
-  if(/复盘|lessons learned|ll/.test(lower)) run('lessons');
-  if(/仿真|dfmea|专项/.test(plain)) run('specialSim');
-  if(applied.size===0) run('general');
-  ['focus','ask','evidence','threshold'].forEach(key=>{
-    if(!meta[key].length) meta[key] = [...META_TEMPLATES.general[key]];
-  });
-  return meta;
-}
-
-function decorateModel(){
-  MODEL.forEach(module=>{
-    module.questions.forEach((q,idx)=>{
-      q.meta = defaultMeta(module.key, q.text);
-      q._normKey = normalizeKey(q.text);
-      q._index = idx;
-    });
-  });
-}
-
-// 从 revise.md 解析 meta
-function applyReviseMeta(markdown){
-  const lines = markdown.split(/\r?\n/);
-  const thresholds = {};
-  let inThreshold = false;
-  lines.forEach(line=>{
-    if(/^###\s+📏\s*门槛/.test(line)) { inThreshold = true; return; }
-    if(inThreshold){
-      if(/^#/.test(line) || /^---/.test(line)) { inThreshold = false; return; }
-      const trimmed = line.trim();
-      if(trimmed.startsWith('- ')){
-        const body = trimmed.slice(2).trim();
-        const parts = body.split(/[:：]/);
-        if(parts.length>=2){
-          thresholds[parts[0].trim()] = parts.slice(1).join('：').trim();
-        }
-      } else if(trimmed===''){ inThreshold = false; }
-    }
-  });
-
-  const designSections = {};
-  let currentKey = null;
-  lines.forEach(line=>{
-    const trimmed = line.trim();
-    const sectionMatch = trimmed.match(/^####\s*(3\.\d)\s*(.*)$/);
-    if(sectionMatch){
-      currentKey = sectionMatch[1];
-      designSections[currentKey] = [];
-      return;
-    }
-    if(currentKey){
-      if(/^####/.test(trimmed) || /^###/.test(trimmed) || /^##/.test(trimmed) || /^---/.test(trimmed)){
-        currentKey = null;
-        return;
-      }
-      if(trimmed.startsWith('- ')){
-        designSections[currentKey].push(trimmed.slice(2).trim());
-      }
-    }
-  });
-
-  const detailSections = [];
-  let currentQuestion = null;
-  let capture = null;
-  lines.forEach(line=>{
-    const trimmed = line.trim();
-    if(/^---$/.test(trimmed)){ currentQuestion=null; capture=null; return; }
-    if(/^\-\s*\*\*(.+)\*\*$/.test(trimmed)){
-      const qText = trimmed.replace(/^\-\s*\*\*/, '').replace(/\*\*$/, '').trim();
-      currentQuestion = qText;
-      capture = null;
-      detailSections.push({question:qText,norm:normalizeKey(qText),evidence:[]});
-      return;
-    }
-    if(currentQuestion){
-      if(/^\*\*(.+)\*\*$/.test(trimmed)){
-        const heading = trimmed.replace(/\*\*/g,'');
-        if(/期望证据/.test(heading)){
-          capture = 'evidence';
-        } else {
-          capture = null;
-        }
-        return;
-      }
-      if(trimmed.startsWith('- ') && capture==='evidence'){
-        const target = detailSections[detailSections.length-1];
-        target.evidence.push(trimmed.slice(2).trim());
-        return;
-      }
-      if(trimmed.startsWith('**打分口径')){ capture=null; }
-    }
-  });
-
-  const thresholdMap = {
-    '3.1': thresholds['ESD 预验证'],
-    '3.2': thresholds['Bode'],
-    '3.3': thresholds['PDN'],
-    '3.4': thresholds['跌落'],
-    '3.5': thresholds['热'],
-    '3.6': thresholds['RF']
-  };
-
-  const designModule = MODEL.find(m=>m.key==='design');
-  if(designModule){
-    designModule.questions.forEach(q=>{
-      const tagMatch = q.text.match(/【(3\.\d)/);
-      const tag = tagMatch?tagMatch[1]:null;
-      if(tag && designSections[tag]){
-        const bullets = designSections[tag];
-        const focusLines = [];
-        let evidenceLine = '';
-        bullets.forEach(item=>{
-          const clean = item.replace(/[`*_]/g,'').trim();
-          const parts = clean.split(/[:：]/);
-          if(parts.length>=2){
-            const label = parts[0].trim();
-            const rest = parts.slice(1).join('：').trim();
-            if(/证据/.test(label)){
-              evidenceLine = rest;
-            } else {
-              focusLines.push(`${label}：${rest}`);
-            }
-          } else if(clean){
-            focusLines.push(clean);
-          }
-        });
-        if(focusLines.length) q.meta.focus = focusLines;
-        if(evidenceLine){
-          const evidArr = evidenceLine.split(/[、；;，]/).map(s=>s.trim()).filter(Boolean);
-          if(evidArr.length) q.meta.evidence = evidArr;
-        }
-      }
-      if(tag && thresholdMap[tag]){
-        const thArr = thresholdMap[tag].split(/[；;]/).map(s=>s.trim()).filter(Boolean);
-        if(thArr.length) q.meta.threshold = thArr;
-      }
-    });
-  }
-
-  const verifyModule = MODEL.find(m=>m.key==='verify');
-  if(verifyModule && detailSections.length){
-    verifyModule.questions.forEach(q=>{
-      const target = detailSections.find(item=>q._normKey.includes(item.norm) || item.norm.includes(q._normKey));
-      if(target && target.evidence.length){
-        q.meta.evidence = target.evidence.map(txt=>txt.replace(/[`*_]/g,'').trim()).filter(Boolean);
-      }
-    });
-  }
-}
-
+// 从 revise.md 解析口径，并对缺失项按模板补齐评分标准
 const MODEL = [
   {
     key:"org",
@@ -824,11 +427,6 @@ const MODEL = [
   }
 ];
 
-decorateModel();
-fetch('revise/revise.md')
-  .then(res=>res.ok?res.text():Promise.reject())
-  .then(text=>applyReviseMeta(text))
-  .catch(()=>{});
 
 /** 动态渲染清单 **/
 const host = document.getElementById('modules');
@@ -846,7 +444,7 @@ MODEL.forEach((m, mi) => {
         ${m.questions.map((q, qi) => `
           <tr>
             <td>${qi+1}</td>
-            <td class="qtext" data-module="${m.key}" data-index="${qi}" tabindex="0">
+            <td>
               <div>${q.text}</div>
               <details class="rubric"><summary>查看打分口径</summary>
                 <ul>
@@ -904,93 +502,6 @@ const radar = new Chart(ctx,{
   }
 });
 
-function getMeta(modKey, idx){
-  const fallback = { focus:['暂无'], ask:['暂无'], evidence:['暂无'], threshold:['暂无'] };
-  const module = MODEL.find(m=>m.key===modKey);
-  const question = module && module.questions[idx];
-  if(!question) return fallback;
-  const meta = question.meta || fallback;
-  const pick = key => (Array.isArray(meta[key]) && meta[key].length) ? meta[key] : fallback[key];
-  return {
-    focus: pick('focus'),
-    ask: pick('ask'),
-    evidence: pick('evidence'),
-    threshold: pick('threshold')
-  };
-}
-
-function renderHover(meta){
-  const build = (title, data) => {
-    const list = Array.isArray(data) ? data : [data];
-    return `<h5>${title}</h5><ul>` + list.map(item=>`<li>${item}</li>`).join('') + '</ul>';
-  };
-  return build('关注点', meta.focus) + build('怎么问', meta.ask) + build('期望证据', meta.evidence) + build('建议门槛', meta.threshold);
-}
-
-// 悬浮提示卡逻辑
-function bindHovercard(){
-  const card = document.getElementById('hovercard');
-  if(!card) return;
-  const cells = document.querySelectorAll('td.qtext');
-  let current = null;
-
-  const hideCard = () => {
-    card.setAttribute('aria-hidden','true');
-    current = null;
-  };
-
-  const placeCard = ev => {
-    if(!ev) return;
-    const pad = 12;
-    let x = ev.clientX + pad;
-    let y = ev.clientY + pad;
-    const rect = card.getBoundingClientRect();
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    if(x + rect.width > vw - 8) x = Math.max(8, vw - rect.width - 8);
-    if(y + rect.height > vh - 8) y = Math.max(8, vh - rect.height - 8);
-    card.style.left = `${Math.max(8, x)}px`;
-    card.style.top = `${Math.max(8, y)}px`;
-  };
-
-  cells.forEach(td=>{
-    td.addEventListener('mouseenter', ev=>{
-      const meta = getMeta(td.dataset.module, Number(td.dataset.index));
-      card.innerHTML = renderHover(meta);
-      card.setAttribute('aria-hidden','false');
-      placeCard(ev);
-      current = td;
-    });
-    td.addEventListener('mousemove', placeCard);
-    td.addEventListener('mouseleave', hideCard);
-    td.addEventListener('focus', ()=>{
-      const meta = getMeta(td.dataset.module, Number(td.dataset.index));
-      card.innerHTML = renderHover(meta);
-      card.setAttribute('aria-hidden','false');
-      const bounds = td.getBoundingClientRect();
-      let x = bounds.right + 8;
-      let y = bounds.bottom + 8;
-      const rect = card.getBoundingClientRect();
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      if(x + rect.width > vw - 8) x = Math.max(8, vw - rect.width - 8);
-      if(y + rect.height > vh - 8) y = Math.max(8, vh - rect.height - 8);
-      card.style.left = `${Math.max(8, x)}px`;
-      card.style.top = `${Math.max(8, y)}px`;
-      current = td;
-    });
-    td.addEventListener('blur', hideCard);
-  });
-
-  document.addEventListener('keydown', e=>{
-    if(e.key === 'Escape'){
-      hideCard();
-    }
-  });
-  window.addEventListener('scroll', hideCard, { passive:true });
-  window.addEventListener('resize', hideCard);
-}
-
 function recalc(){
   const avgs=[];
   MODEL.forEach((m, idx)=>{
@@ -1006,12 +517,11 @@ function recalc(){
 
   // KPI 概览
   const overall = avgs.filter(v=>v>0).length? (avgs.reduce((a,b)=>a+b,0)/avgs.filter(v=>v>0).length) : NaN;
-  kpiBox.innerHTML =
+  kpiBox.innerHTML = 
     kpiCell('总体均分', overall) +
     MODEL.map((m,i)=>kpiCell(m.name.split(' ')[0], avgs[i]||NaN)).join('');
 }
 recalc();
-bindHovercard();
 
 function resetScores(){
   document.querySelectorAll('select.scorebox').forEach(s=>s.value="");
@@ -1025,18 +535,11 @@ function exportJSON(){
     const rows=[...document.querySelectorAll(`select[data-module="${m.key}"]`)].map((s,idx)=>{
       const tr = s.closest('tr');
       const qObj = m.questions[idx];
-      const meta = qObj.meta || {};
       return {
         q: qObj.text,
         score: Number(s.value||0),
         note: tr.querySelector('input.notes').value||"",
-        rubric: {...qObj.rubric},
-        meta:{
-          focus: Array.isArray(meta.focus)?[...meta.focus]:[],
-          ask: Array.isArray(meta.ask)?[...meta.ask]:[],
-          evidence: Array.isArray(meta.evidence)?[...meta.evidence]:[],
-          threshold: Array.isArray(meta.threshold)?[...meta.threshold]:[]
-        }
+        rubric: {...qObj.rubric}
       };
     });
     const scores=rows.map(r=>r.score).filter(v=>v>0);
