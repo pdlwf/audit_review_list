@@ -8,6 +8,7 @@
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft Yahei",sans-serif;margin:24px;color:#111}
   h1,h2{margin:0 0 12px}
   .desc{color:#555;margin-bottom:18px}
+  .header-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   .grid{display:grid;gap:18px}
   .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px}
   table{width:100%;border-collapse:collapse;font-size:14px}
@@ -37,23 +38,26 @@
 </head>
 <body>
   <div class="stickybar footer">
-    <button class="btn" onclick="resetScores()">清空分数</button>
-    <button class="btn" onclick="exportJSON()">导出 JSON</button>
-    <span class="legend">评分尺度：1 无系统｜2 非正式｜3 有文件并执行｜4 有效运行且闭环｜5 自动化数据驱动</span>
+    <button class="btn" id="clearBtn" type="button"></button>
+    <button class="btn" id="exportBtn" type="button"></button>
+    <span class="legend" id="scaleLegend"></span>
   </div>
 
-  <h1>研发能力审核 R&D Capability Assessment</h1>
-  <p class="desc">目标：确认供应商从产品定义、设计、验证到制造导入全链路内建质量与可靠性，风险受控、供应可得、测试覆盖充分，并以数据驱动持续改进。</p>
+  <div class="header-bar">
+    <h1 id="pageTitle"></h1>
+    <button id="langToggle" class="btn" type="button" aria-label="toggle language"></button>
+  </div>
+  <p class="desc" id="pageDesc"></p>
 
   <div id="modules" class="grid"></div>
 
   <div id="hovercard" role="tooltip" aria-hidden="true"></div>
 
   <div class="card">
-    <h2>汇总与雷达图</h2>
+    <h2 id="summaryTitle"></h2>
     <div class="kpi" id="kpi"></div>
     <canvas id="radar" height="180"></canvas>
-    <p class="muted">提示：各模块得分为该模块问题的<strong>平均分</strong>（满分 5）。建议门槛：<span class="ok">≥4.0</span> 合格；<span class="warn">3.0–3.9</span> 需整改计划；<span class="risk">&lt;3.0</span> 高风险。</p>
+    <p class="muted" id="summaryTip"></p>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -63,74 +67,281 @@ const DATA_DIR = "./data";
 const moduleAverages = new Map();
 let MODEL = [];
 let radar = null;
+let UI_I18N = {};
+window.UI_I18N = UI_I18N;
+const LANGS = ["zh","en"];
+const DRAFT_KEY = "audit.draft.v1";
+const RUBRIC_FALLBACK = {
+  zh: {
+    "1": "无系统",
+    "2": "非正式",
+    "3": "有文件并执行",
+    "4": "有效运行且闭环",
+    "5": "自动化数据驱动"
+  },
+  en: {
+    "1": "No system",
+    "2": "Informal",
+    "3": "Documented & executed",
+    "4": "Effective & closed-loop",
+    "5": "Automated & data-driven"
+  }
+};
+let HOVER_EVENTS_BOUND = false;
 
 function escapeHtml(str) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
-  return String(str ?? '').replace(/[&<>"']/g, ch => map[ch]);
+  return String(str ?? "").replace(/[&<>"']/g, ch => map[ch]);
 }
-
+function escapeAttr(str){
+  return escapeHtml(str);
+}
 function slugify(s){
   return String(s || "")
     .replace(/<\/?[^>]+>/g, "")
-    .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
+    .replace(/[^\w一-龥]+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$|_/g, "")
     .toLowerCase();
 }
 
+function ensureLangObject(value){
+  if(value && typeof value === "object" && !Array.isArray(value)){
+    const zh = typeof value.zh === "string" ? value.zh.trim() : "";
+    const en = typeof value.en === "string" ? value.en.trim() : "";
+    const fallback = zh || en || "";
+    return { zh: zh || fallback, en: en || fallback };
+  }
+  if(typeof value === "string"){
+    const trimmed = value.trim();
+    return { zh: trimmed, en: trimmed };
+  }
+  return { zh: "", en: "" };
+}
+
+function normalizeRubricLang(source, lang){
+  const fallback = RUBRIC_FALLBACK[lang];
+  const base = (source && typeof source === "object" && !Array.isArray(source)) ? source : {};
+  const result = {};
+  for(let i = 1; i <= 5; i++){
+    const key = String(i);
+    const raw = base[key];
+    const text = typeof raw === "string" && raw.trim() ? raw.trim() : fallback[key];
+    result[key] = text;
+  }
+  return result;
+}
+
+function normalizeMetaLang(source, lang){
+  const fallbackText = lang === "en" ? "(None)" : "（暂无）";
+  const base = (source && typeof source === "object" && !Array.isArray(source)) ? source : {};
+  const result = {};
+  ["focus","ask","evidence","threshold"].forEach(key => {
+    const raw = base[key];
+    const arr = Array.isArray(raw) ? raw : (raw != null ? [raw] : []);
+    const cleaned = arr.map(item => {
+      if(typeof item === "string") return item.trim();
+      if(item == null) return "";
+      return String(item).trim();
+    }).filter(item => item && item !== "（暂无条目）");
+    result[key] = cleaned.length ? Array.from(new Set(cleaned)) : [fallbackText];
+  });
+  return result;
+}
+
+function getLang(){
+  const saved = localStorage.getItem("audit.lang");
+  if(saved && LANGS.includes(saved)) return saved;
+  const nav = (navigator.language || navigator.userLanguage || "zh").toLowerCase();
+  return nav.startsWith("zh") ? "zh" : "en";
+}
+function setLang(l){
+  if(LANGS.includes(l)){
+    localStorage.setItem("audit.lang", l);
+  }
+}
+
+function tUI(key){
+  const lang = window.CUR_LANG || "zh";
+  if(UI_I18N && UI_I18N[lang] && UI_I18N[lang][key] != null){
+    return UI_I18N[lang][key];
+  }
+  if(UI_I18N && UI_I18N.zh && UI_I18N.zh[key] != null){
+    return UI_I18N.zh[key];
+  }
+  return key;
+}
+function tName(module){
+  if(!module) return "";
+  const lang = window.CUR_LANG || "zh";
+  const name = module.name;
+  if(typeof name === "string") return name;
+  if(name && typeof name === "object"){
+    return name[lang] || name.zh || "";
+  }
+  return module.key || "";
+}
+function tIntent(module){
+  if(!module) return "";
+  const lang = window.CUR_LANG || "zh";
+  const intent = module.intent;
+  if(typeof intent === "string") return intent;
+  if(intent && typeof intent === "object"){
+    return intent[lang] || intent.zh || "";
+  }
+  return "";
+}
+function tText(question){
+  if(!question) return "";
+  const lang = window.CUR_LANG || "zh";
+  const text = question.text;
+  if(typeof text === "string") return text;
+  if(text && typeof text === "object"){
+    return text[lang] || text.zh || "";
+  }
+  return "";
+}
+function tRubric(question){
+  const lang = window.CUR_LANG || "zh";
+  const rb = question && question.rubric;
+  if(rb){
+    if(rb[lang]) return rb[lang];
+    if(rb.zh) return rb.zh;
+    return rb;
+  }
+  return null;
+}
+function tMeta(question){
+  const lang = window.CUR_LANG || "zh";
+  const meta = question && question.meta;
+  if(meta){
+    if(meta[lang]) return meta[lang];
+    if(meta.zh) return meta.zh;
+    return meta;
+  }
+  return { focus: [], ask: [], evidence: [], threshold: [] };
+}
+
+function readDraft(){
+  try{
+    const raw = localStorage.getItem(DRAFT_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (err){
+    return {};
+  }
+}
+function writeDraft(d){
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+}
+function saveField(modKey, qId, field, value){
+  if(!modKey || !qId) return;
+  const draft = readDraft();
+  draft.lang = window.CUR_LANG || "zh";
+  draft.modules = draft.modules || {};
+  const moduleDraft = draft.modules[modKey] || (draft.modules[modKey] = {});
+  const record = moduleDraft[qId] || (moduleDraft[qId] = {});
+  const isEmpty = value === null || value === undefined || value === "" || (typeof value === "string" && value.trim() === "");
+  if(isEmpty){
+    delete record[field];
+  } else {
+    record[field] = value;
+  }
+  if(Object.keys(record).length === 0){
+    delete moduleDraft[qId];
+  }
+  if(Object.keys(moduleDraft).length === 0){
+    delete draft.modules[modKey];
+  }
+  writeDraft(draft);
+}
+function applyDraft(draft){
+  if(!draft || !draft.modules) return;
+  Object.entries(draft.modules).forEach(([modKey, questions]) => {
+    const selects = Array.from(document.querySelectorAll(`select.scorebox[data-module="${modKey}"]`));
+    const notes = Array.from(document.querySelectorAll(`input.notes[data-module="${modKey}"]`));
+    Object.entries(questions || {}).forEach(([qid, rec]) => {
+      if(rec && typeof rec === "object"){
+        if(rec.score !== null && rec.score !== undefined && rec.score !== ""){
+          selects.forEach(sel => {
+            if(sel.dataset.qid === qid){
+              sel.value = String(rec.score);
+            }
+          });
+        }
+        if(rec.note !== null && rec.note !== undefined){
+          notes.forEach(input => {
+            if(input.dataset.qid === qid){
+              input.value = String(rec.note);
+            }
+          });
+        }
+      }
+    });
+  });
+}
+
 function ensureQuestionShape(modKey, q, idx){
-  const FALLBACK_RUBRIC = {
-    "1":"无系统",
-    "2":"非正式",
-    "3":"有文件并执行",
-    "4":"有效运行且闭环",
-    "5":"自动化数据驱动"
-  };
-  const question = (q && typeof q === "object") ? {...q} : { text: String(q ?? "") };
-  question.text = typeof question.text === "string" ? question.text.trim() : String(question.text ?? "");
+  const question = (q && typeof q === "object" && !Array.isArray(q)) ? { ...q } : {};
+  question.text = ensureLangObject(question.text !== undefined ? question.text : q);
   if(!question.id || typeof question.id !== "string" || !question.id.trim()){
-    const base = slugify(question.text).slice(0, 60) || `q${(idx || 0) + 1}`;
+    const baseText = question.text.zh || question.text.en || `q${(idx || 0) + 1}`;
+    const base = slugify(baseText).slice(0, 60) || `q${(idx || 0) + 1}`;
     question.id = `${modKey}-${base}`;
   }
-  const rubricSource = (question.rubric && typeof question.rubric === "object") ? question.rubric : {};
-  question.rubric = {};
-  ["1","2","3","4","5"].forEach(level => {
-    const txt = rubricSource[level];
-    question.rubric[level] = (txt && String(txt).trim()) ? String(txt).trim() : FALLBACK_RUBRIC[level];
-  });
-  const metaSource = (question.meta && typeof question.meta === "object") ? question.meta : {};
-  const meta = { focus: [], ask: [], evidence: [], threshold: [] };
-  Object.keys(meta).forEach(key => {
-    const arr = Array.isArray(metaSource[key]) ? metaSource[key] : [];
-    const cleaned = arr
-      .map(item => (typeof item === "string" ? item.trim() : item))
-      .filter(item => item && item !== "（暂无条目）");
-    meta[key] = cleaned.length ? Array.from(new Set(cleaned)) : ["（暂无条目）"];
-  });
-  question.meta = meta;
+  const rawRubric = question.rubric;
+  const zhRubric = normalizeRubricLang(rawRubric && rawRubric.zh ? rawRubric.zh : rawRubric, "zh");
+  let enRubric;
+  if(rawRubric && rawRubric.en){
+    enRubric = normalizeRubricLang(rawRubric.en, "en");
+    for(let i = 1; i <= 5; i++){
+      const key = String(i);
+      if(!enRubric[key]){
+        enRubric[key] = zhRubric[key] || RUBRIC_FALLBACK.en[key];
+      }
+    }
+  } else {
+    enRubric = { ...zhRubric };
+  }
+  question.rubric = { zh: zhRubric, en: enRubric };
+
+  const rawMeta = question.meta;
+  const zhMeta = normalizeMetaLang(rawMeta && rawMeta.zh ? rawMeta.zh : rawMeta, "zh");
+  let enMeta;
+  if(rawMeta && rawMeta.en){
+    enMeta = normalizeMetaLang(rawMeta.en, "en");
+    ["focus","ask","evidence","threshold"].forEach(key => {
+      if(!Array.isArray(enMeta[key]) || enMeta[key].length === 0){
+        enMeta[key] = zhMeta[key].slice();
+      }
+    });
+  } else {
+    enMeta = {
+      focus: zhMeta.focus.slice(),
+      ask: zhMeta.ask.slice(),
+      evidence: zhMeta.evidence.slice(),
+      threshold: zhMeta.threshold.slice()
+    };
+  }
+  question.meta = { zh: zhMeta, en: enMeta };
   return question;
 }
 
 function optionHtml(n, text){
-  const FALLBACK = {
-    1: "1 无系统",
-    2: "2 非正式",
-    3: "3 有文件并执行",
-    4: "4 有效运行且闭环",
-    5: "5 自动化数据驱动"
-  };
-  const raw = text ? `${n} ${text}` : FALLBACK[n];
+  const fallbackMap = RUBRIC_FALLBACK[window.CUR_LANG === "en" ? "en" : "zh"];
+  const fallbackLabel = `${n} ${fallbackMap[String(n)]}`;
+  const raw = text && String(text).trim() ? `${n} ${text}` : fallbackLabel;
   const safe = escapeHtml(raw);
   return `<option value="${n}" title="${safe}">${safe}</option>`;
 }
 
-function renderScorebox(modKey, qIndex){
+function renderScorebox(modKey, idx){
   const module = MODEL.find(m => m.key === modKey);
-  const question = module && module.questions ? module.questions[qIndex] : null;
-  const rubric = question ? question.rubric : null;
+  const question = module && module.questions ? module.questions[idx] : null;
+  const rubric = question ? tRubric(question) : null;
+  const qId = question ? question.id : "";
   const options = [1,2,3,4,5].map(n => optionHtml(n, rubric ? rubric[String(n)] : null)).join("");
   return `
-    <select class="scorebox" data-module="${modKey}" data-index="${qIndex}" onchange="recalc()">
+    <select class="scorebox" data-module="${modKey}" data-index="${idx}" data-qid="${escapeAttr(qId)}">
       <option value="">—</option>
       ${options}
     </select>
@@ -140,13 +351,14 @@ function renderScorebox(modKey, qIndex){
 function getMeta(modKey, idx){
   const module = MODEL.find(m => m.key === modKey);
   const question = module && module.questions ? module.questions[idx] : null;
+  const fallback = window.CUR_LANG === "en" ? "(None)" : "（暂无）";
   if(!question){
-    return { focus:["（暂无）"], ask:["（暂无）"], evidence:["（暂无）"], threshold:["（暂无）"] };
+    return { focus: [fallback], ask: [fallback], evidence: [fallback], threshold: [fallback] };
   }
-  const meta = question.meta || {};
+  const meta = tMeta(question) || {};
   const pick = key => {
-    const arr = Array.isArray(meta[key]) ? meta[key] : [];
-    return arr.length ? arr : ["（暂无）"];
+    const arr = meta[key];
+    return Array.isArray(arr) && arr.length ? arr : [fallback];
   };
   return {
     focus: pick("focus"),
@@ -157,17 +369,16 @@ function getMeta(modKey, idx){
 }
 
 function renderHover(meta){
-  const sections = [
-    ["关注点", meta.focus],
-    ["怎么问", meta.ask],
-    ["期望证据", meta.evidence],
-    ["建议门槛", meta.threshold]
-  ];
-  return sections.map(([title, list]) => {
-    const items = Array.isArray(list) ? list : [list];
-    const li = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
-    return `<h5>${escapeHtml(title)}</h5><ul>${li}</ul>`;
-  }).join("");
+  const lang = window.CUR_LANG === "en" ? "en" : "zh";
+  const labels = lang === "en"
+    ? { f: "Focus", a: "How to ask", e: "Expected evidence", th: "Suggested thresholds" }
+    : { f: "关注点", a: "怎么问", e: "期望证据", th: "建议门槛" };
+  const mk = (title, arr) => {
+    const items = Array.isArray(arr) ? arr : [arr];
+    const lis = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    return `<h5>${escapeHtml(title)}</h5><ul>${lis}</ul>`;
+  };
+  return mk(labels.f, meta.focus) + mk(labels.a, meta.ask) + mk(labels.e, meta.evidence) + mk(labels.th, meta.threshold);
 }
 
 function bindHovercard(){
@@ -214,49 +425,94 @@ function bindHovercard(){
     });
     td.addEventListener("blur", hide);
   });
-  document.addEventListener("keydown", e => { if(e.key === "Escape") hide(); });
-  window.addEventListener("scroll", hide, { passive: true });
-  window.addEventListener("resize", hide);
+  if(!HOVER_EVENTS_BOUND){
+    document.addEventListener("keydown", e => { if(e.key === "Escape") hide(); });
+    window.addEventListener("scroll", hide, { passive: true });
+    window.addEventListener("resize", hide);
+    HOVER_EVENTS_BOUND = true;
+  }
 }
 
 function renderModules(modules){
   const host = document.getElementById("modules");
   if(!host) return;
+  const notePlaceholder = escapeAttr(tUI("notes.placeholder"));
   const html = modules.map(module => {
     const questions = (module.questions || []).map((q, idx) => `
-      <tr>
+      <tr data-module="${module.key}" data-index="${idx}" data-qid="${escapeAttr(q.id)}">
         <td>${idx + 1}</td>
-        <td class="qtext" data-module="${module.key}" data-index="${idx}" tabindex="0">
-          <div>${escapeHtml(q.text)}</div>
+        <td class="qtext" data-module="${module.key}" data-index="${idx}" data-qid="${escapeAttr(q.id)}" tabindex="0">
+          <div>${escapeHtml(tText(q))}</div>
         </td>
         <td class="score-cell">
           ${renderScorebox(module.key, idx)}
         </td>
-        <td><input class="notes" placeholder="证据/链接/记录编号（如：DFMEA#2025-03, DRR纪要, TVS选型表 等）"></td>
+        <td><input class="notes" data-module="${module.key}" data-index="${idx}" data-qid="${escapeAttr(q.id)}" placeholder="${notePlaceholder}"></td>
       </tr>
     `).join("");
-    const intent = module.intent ? `<span class="badge" title="${escapeHtml(module.intent)}">目的：${escapeHtml(module.intent)}</span>` : "";
+    const intentText = tIntent(module);
+    const intent = intentText ? `<span class="badge" title="${escapeHtml(intentText)}">${escapeHtml(tUI("badge.intent"))}${escapeHtml(intentText)}</span>` : "";
     return `
       <div class="card module">
         <div class="mod-head">
-          <h2>${escapeHtml(module.name || module.key)}</h2>
+          <h2>${escapeHtml(tName(module))}</h2>
           ${intent}
         </div>
         <table>
-          <thead><tr><th style="width:44px">#</th><th>问题（Questions）</th><th style="width:110px">得分(1-5)</th><th>证据/备注</th></tr></thead>
+          <thead><tr><th style="width:44px">#</th><th>${escapeHtml(tUI("questions"))}</th><th style="width:110px">${escapeHtml(tUI("score"))}</th><th>${escapeHtml(tUI("notes"))}</th></tr></thead>
           <tbody>${questions}</tbody>
         </table>
         <div class="footer">
-          <span class="pill">模块均分：<b class="avg" data-module="${module.key}">—</b></span>
-          <span class="muted">（空白项不计入均分）</span>
+          <span class="pill">${escapeHtml(tUI("module.avg"))}<b class="avg" data-module="${module.key}">—</b></span>
+          <span class="muted">${escapeHtml(tUI("module.avg.note"))}</span>
         </div>
       </div>
     `;
   }).join("");
   host.innerHTML = html;
-  host.querySelectorAll('details.rubric').forEach(el => el.remove());
-  bindHovercard();
-  moduleAverages.clear();
+  host.querySelectorAll("select.scorebox").forEach(sel => {
+    sel.addEventListener("change", () => {
+      const value = sel.value ? Number(sel.value) : null;
+      saveField(sel.dataset.module, sel.dataset.qid, "score", value);
+      recalc();
+    });
+  });
+  host.querySelectorAll("input.notes").forEach(input => {
+    input.addEventListener("input", () => {
+      saveField(input.dataset.module, input.dataset.qid, "note", input.value);
+    });
+  });
+}
+
+function applyUIStrings(){
+  const lang = window.CUR_LANG === "en" ? "en" : "zh";
+  document.documentElement.lang = lang === "en" ? "en" : "zh";
+  document.title = tUI("title");
+  const titleEl = document.getElementById("pageTitle");
+  if(titleEl) titleEl.textContent = tUI("title");
+  const descEl = document.getElementById("pageDesc");
+  if(descEl) descEl.textContent = tUI("desc");
+  const clearBtn = document.getElementById("clearBtn");
+  if(clearBtn) clearBtn.textContent = tUI("clear");
+  const exportBtn = document.getElementById("exportBtn");
+  if(exportBtn) exportBtn.textContent = tUI("export");
+  const legend = document.getElementById("scaleLegend");
+  if(legend) legend.textContent = tUI("legend.scale");
+  const summaryTitle = document.getElementById("summaryTitle");
+  if(summaryTitle) summaryTitle.textContent = tUI("summary.title");
+  const summaryTip = document.getElementById("summaryTip");
+  if(summaryTip) summaryTip.innerHTML = tUI("summary.tip");
+  const langToggle = document.getElementById("langToggle");
+  if(langToggle) langToggle.textContent = tUI("toggle.lang");
+}
+
+function updateRadarLabels(){
+  if(!radar) return;
+  radar.data.labels = MODEL.map(m => tName(m).replace(/^\d+\.\s*/, ""));
+  if(radar.data.datasets && radar.data.datasets[0]){
+    radar.data.datasets[0].label = tUI("chart.dataset");
+  }
+  radar.update();
 }
 
 const kpiBox = document.getElementById("kpi");
@@ -270,6 +526,7 @@ function kpiCell(label, value){
 
 function recalc(){
   if(!Array.isArray(MODEL) || !MODEL.length) return;
+  moduleAverages.clear();
   const averages = [];
   MODEL.forEach((module, idx) => {
     const selects = Array.from(document.querySelectorAll(`select.scorebox[data-module="${module.key}"]`));
@@ -289,9 +546,9 @@ function recalc(){
   const valid = averages.filter(v => Number.isFinite(v) && v > 0);
   const overall = valid.length ? valid.reduce((sum, v) => sum + v, 0) / valid.length : NaN;
   kpiBox.innerHTML =
-    kpiCell("总体均分", overall) +
+    kpiCell(tUI("kpi.overall"), overall) +
     MODEL.map((module, idx) => {
-      const label = module.name ? module.name.split(" ")[0] : module.key;
+      const label = tName(module).replace(/^\d+\.\s*/, "") || module.key;
       return kpiCell(label, averages[idx]);
     }).join("");
 }
@@ -300,6 +557,7 @@ function resetScores(){
   document.querySelectorAll("select.scorebox").forEach(sel => sel.value = "");
   document.querySelectorAll("input.notes").forEach(input => input.value = "");
   moduleAverages.clear();
+  writeDraft({ lang: window.CUR_LANG || "zh" });
   recalc();
 }
 
@@ -309,27 +567,33 @@ function calcAvgForModule(modKey){
 }
 
 function exportJSON(){
-  const output = { generatedAt: new Date().toISOString(), modules: [] };
+  const output = { generatedAt: new Date().toISOString(), lang: window.CUR_LANG || "zh", modules: [] };
   MODEL.forEach(module => {
     const selects = Array.from(document.querySelectorAll(`select.scorebox[data-module="${module.key}"]`));
     const rows = selects.map(sel => {
       const idx = Number(sel.dataset.index);
       const question = module.questions[idx];
       const tr = sel.closest("tr");
-      const note = tr ? (tr.querySelector(".notes")?.value || "") : "";
+      const noteInput = tr ? tr.querySelector(".notes") : null;
+      const note = noteInput ? noteInput.value : "";
       return {
         id: question.id,
-        text: question.text,
-        score: Number(sel.value || 0),
+        q: tText(question),
+        q_all: question.text,
+        score: sel.value ? Number(sel.value) : 0,
         note,
-        rubric: question.rubric,
-        meta: question.meta
+        rubric: tRubric(question),
+        rubric_all: question.rubric,
+        meta: tMeta(question),
+        meta_all: question.meta
       };
     });
     output.modules.push({
       key: module.key,
-      name: module.name,
+      name: tName(module),
+      name_all: module.name,
       version: module.version || null,
+      intent: module.intent || null,
       avg: calcAvgForModule(module.key),
       rows
     });
@@ -340,6 +604,21 @@ function exportJSON(){
   link.download = `audit_export_${new Date().toISOString().slice(0, 10)}.json`;
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+async function loadUI(){
+  try{
+    const res = await fetch(`${DATA_DIR}/i18n-ui.json?ts=${Date.now()}`);
+    if(!res.ok){
+      throw new Error(`无法加载 UI 文案：${res.status}`);
+    }
+    UI_I18N = await res.json();
+    window.UI_I18N = UI_I18N;
+  } catch (err){
+    console.warn(err);
+    UI_I18N = { zh: {}, en: {} };
+    window.UI_I18N = UI_I18N;
+  }
 }
 
 async function loadModules(){
@@ -353,6 +632,15 @@ async function loadModules(){
     const data = await response.json();
     const moduleKey = data.key || key;
     data.key = moduleKey;
+    data.name = ensureLangObject(data.name);
+    if(data.intent !== undefined){
+      const intentObj = ensureLangObject(data.intent);
+      if(intentObj.zh || intentObj.en){
+        data.intent = intentObj;
+      } else {
+        delete data.intent;
+      }
+    }
     data.questions = Array.isArray(data.questions)
       ? data.questions.map((q, idx) => ensureQuestionShape(moduleKey, q, idx))
       : [];
@@ -367,13 +655,13 @@ function initRadar(modules){
   const canvas = document.getElementById("radar");
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
-  const labels = modules.map(m => (m.name || m.key).replace(/^\d+\.\s*/, ""));
+  const labels = modules.map(m => tName(m).replace(/^\d+\.\s*/, ""));
   radar = new Chart(ctx, {
     type: "radar",
     data: {
       labels,
       datasets: [{
-        label: "模块得分",
+        label: tUI("chart.dataset"),
         data: new Array(labels.length).fill(0),
         fill: true,
         borderWidth: 2,
@@ -388,12 +676,61 @@ function initRadar(modules){
   });
 }
 
+function rerenderAll(){
+  const draft = readDraft();
+  if(draft.lang && LANGS.includes(draft.lang)){
+    window.CUR_LANG = draft.lang;
+    setLang(draft.lang);
+  }
+  applyUIStrings();
+  renderModules(MODEL);
+  applyDraft(draft);
+  bindHovercard();
+  updateRadarLabels();
+  recalc();
+}
+
+function setupLangToggle(){
+  const btn = document.getElementById("langToggle");
+  if(!btn) return;
+  const apply = () => { btn.textContent = tUI("toggle.lang"); };
+  btn.addEventListener("click", () => {
+    const cur = window.CUR_LANG || "zh";
+    const next = cur === "zh" ? "en" : "zh";
+    window.CUR_LANG = next;
+    setLang(next);
+    const draft = readDraft();
+    draft.lang = next;
+    writeDraft(draft);
+    apply();
+    rerenderAll();
+  });
+  apply();
+}
+
+function setupActions(){
+  const clearBtn = document.getElementById("clearBtn");
+  if(clearBtn){
+    clearBtn.addEventListener("click", resetScores);
+  }
+  const exportBtn = document.getElementById("exportBtn");
+  if(exportBtn){
+    exportBtn.addEventListener("click", exportJSON);
+  }
+}
+
 (async function init(){
   try{
-    const modules = await loadModules();
-    renderModules(modules);
-    initRadar(modules);
-    recalc();
+    await loadUI();
+    const draft = readDraft();
+    const initialLang = draft.lang && LANGS.includes(draft.lang) ? draft.lang : getLang();
+    window.CUR_LANG = initialLang;
+    setLang(initialLang);
+    setupActions();
+    setupLangToggle();
+    await loadModules();
+    initRadar(MODEL);
+    rerenderAll();
   } catch (err){
     console.error(err);
     const host = document.getElementById("modules");
