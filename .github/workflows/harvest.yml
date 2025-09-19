@@ -1,0 +1,37 @@
+name: Harvest Method Frameworks
+
+on:
+  push:
+    paths:
+      - "basic_knowledge/method_frame/**"
+      - "scripts/harvest_methods.py"
+      - "method_harvester/**"
+      - "tests/**"
+      - "Makefile"
+      - "pyproject.toml"
+      - "README_harvester.md"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e .[dev] pypdf python-docx beautifulsoup4 lxml ruff mypy pytest
+      - run: make check
+      - run: make test
+      - run: |
+          python scripts/harvest_methods.py scan
+          python scripts/harvest_methods.py update
+          python scripts/harvest_methods.py render
+      - name: Commit updates
+        run: |
+          git config user.name "harvest-bot"
+          git config user.email "harvest-bot@users.noreply.github.com"
+          git add basic_knowledge/method_frame/_index
+          git commit -m "chore(harvest): update registry & summary [skip ci]" || echo "no changes"
+          git push
+

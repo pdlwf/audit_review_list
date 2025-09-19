@@ -1,0 +1,42 @@
+{
+  "timestamp": "2025-09-19T03:59:32+00:00",
+  "target": "basic_knowledge/method_frame",
+  "files": {
+    "basic_knowledge/method_frame/_samples/prioritization.md": {
+      "file": "basic_knowledge/method_frame/_samples/prioritization.md",
+      "sha256": "707b981d3e2183b8669862676e7d402c3a48bd240da3fc9c98af1767d4817248",
+      "mtime": 1758253666,
+      "extracted_count": 2,
+      "status": "pending",
+      "error": null
+    },
+    "basic_knowledge/method_frame/_samples/root_cause_analysis.md": {
+      "file": "basic_knowledge/method_frame/_samples/root_cause_analysis.md",
+      "sha256": "e859eb76deab61aba30b1d58128f042cad264d2fce48726cf267fbc0f27b0967",
+      "mtime": 1758253660,
+      "extracted_count": 2,
+      "status": "pending",
+      "error": null
+    },
+    "basic_knowledge/method_frame/\u50cf\u9ad8\u624b\u4e00\u6837\u601d\u8003\uff1a\u8ba9\u4f60\u8131\u9896\u800c\u51fa\u7684100\u4e2a\u9876\u7ea7\u601d\u7ef4\u6a21\u578b - \u5229\u5179.pdf": {
+      "file": "basic_knowledge/method_frame/\u50cf\u9ad8\u624b\u4e00\u6837\u601d\u8003\uff1a\u8ba9\u4f60\u8131\u9896\u800c\u51fa\u7684100\u4e2a\u9876\u7ea7\u601d\u7ef4\u6a21\u578b - \u5229\u5179.pdf",
+      "sha256": "5761b8d06ea8f580840de645d4a53b762eb9f5292b63df408e57c246d18008a7",
+      "mtime": 1758253251,
+      "extracted_count": 0,
+      "status": "pending",
+      "error": null
+    },
+    "basic_knowledge/method_frame/\u67e5\u7406\u00b7\u8292\u683c\u7684 100 \u4e2a\u601d\u7ef4\u6a21\u578b\u7814\u7a76.pdf": {
+      "file": "basic_knowledge/method_frame/\u67e5\u7406\u00b7\u8292\u683c\u7684 100 \u4e2a\u601d\u7ef4\u6a21\u578b\u7814\u7a76.pdf",
+      "sha256": "a081a57e6828307a208e6383386988e5a152d389036fca3bdec48c2fa2a7422f",
+      "mtime": 1758253251,
+      "extracted_count": 0,
+      "status": "pending",
+      "error": null
+    }
+  },
+  "counts": {
+    "files": 4,
+    "items": 4
+  }
+}
