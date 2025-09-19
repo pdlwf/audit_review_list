@@ -16,6 +16,12 @@ python basic_knowledge/scripts/harvest_methods.py update
 python basic_knowledge/scripts/harvest_methods.py render
 ```
 
+For richer PDF extraction install the optional backends:
+
+```bash
+pip install pypdf pdfminer.six pikepdf
+```
+
 Use `--root` to point the CLI to another checkout or sandbox. The `check`
 command performs a dry-run to show which files would be parsed and whether they
 changed since the last update.
@@ -56,7 +62,8 @@ make test     # run ruff, mypy, and pytest
 ## Troubleshooting
 
 - **Missing dependencies** – install via `pip install -e .[dev]` to pull in
-  `beautifulsoup4`, `lxml`, `pypdf`, `python-docx`, and tooling.
+  `beautifulsoup4`, `lxml`, `pypdf`, `python-docx`, and tooling. Add
+  `pdfminer.six` and `pikepdf` for resilient PDF extraction.
 - **PDF extraction is empty** – not all PDFs contain embedded text. The harvester
   logs a warning and continues without blocking the run.
 - **No items detected** – ensure section headings contain words such as

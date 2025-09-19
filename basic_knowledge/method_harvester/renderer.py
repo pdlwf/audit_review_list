@@ -1,6 +1,7 @@
 """Rendering utilities for the registry summary."""
 from __future__ import annotations
 
+import json
 from collections import Counter
 from collections.abc import Iterable, Mapping
 from datetime import UTC, datetime
@@ -58,6 +59,9 @@ def render_summary(registry_path: Path, manifest_path: Path, output_path: Path) 
             source_links = format_sources(sources_raw)
             lines.append(f"- {timestamp}: **{name}** ({change}) {source_links}")
     lines.append("")
+    pdf_footer = build_pdf_footer(output_path.parent / "scan_report.json")
+    if pdf_footer:
+        lines.extend(pdf_footer)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     content = "\n".join(lines)
     output_path.write_text(content, encoding="utf-8")
@@ -106,4 +110,54 @@ def format_sources(sources: Iterable[Mapping[str, Any]]) -> str:
         if file_path:
             links.append(f"[{escape_cell(display)}]({href})")
     return "<br>".join(links)
+
+
+def build_pdf_footer(scan_report_path: Path) -> list[str]:
+    if not scan_report_path.exists():
+        return []
+    try:
+        with scan_report_path.open("r", encoding="utf-8") as fh:
+            report = json.load(fh)
+    except Exception:
+        return []
+    files = cast(dict[str, Any], report.get("files", {}))
+    pdf_entries = [
+        entry for path, entry in files.items() if str(path).lower().endswith(".pdf")
+    ]
+    if not pdf_entries:
+        return []
+    ok = short = error = 0
+    backend_counter: Counter[str] = Counter()
+    for entry in pdf_entries:
+        status = str(entry.get("status", "pending"))
+        if status == "error":
+            error += 1
+            continue
+        meta = cast(dict[str, Any], entry.get("pdf_meta") or {})
+        backend = str(meta.get("backend", "none"))
+        error_message = meta.get("error")
+        if not meta:
+            error += 1
+            continue
+        if error_message:
+            error += 1
+            continue
+        if backend == "none":
+            short += 1
+            continue
+        ok += 1
+        backend_counter[backend] += 1
+    total = ok + short + error
+    backend_summary = (
+        ", ".join(f"{name} ({count})" for name, count in backend_counter.most_common())
+        if backend_counter
+        else "none"
+    )
+    return [
+        "## PDF Extraction Summary",
+        "",
+        f"PDF files: {total} | ok: {ok} | short: {short} | error: {error}",
+        f"Backends: {backend_summary}",
+        "",
+    ]
 
