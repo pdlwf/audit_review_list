@@ -1,0 +1,46 @@
+{
+  "files": {
+    "basic_knowledge/method_frame/_samples/prioritization.md": {
+      "error": null,
+      "extracted_count": 2,
+      "file": "basic_knowledge/method_frame/_samples/prioritization.md",
+      "last_ingested_at": "2025-09-19T04:01:21+00:00",
+      "mtime": 1758253666,
+      "sha256": "707b981d3e2183b8669862676e7d402c3a48bd240da3fc9c98af1767d4817248",
+      "status": "new"
+    },
+    "basic_knowledge/method_frame/_samples/root_cause_analysis.md": {
+      "error": null,
+      "extracted_count": 2,
+      "file": "basic_knowledge/method_frame/_samples/root_cause_analysis.md",
+      "last_ingested_at": "2025-09-19T04:01:21+00:00",
+      "mtime": 1758253660,
+      "sha256": "e859eb76deab61aba30b1d58128f042cad264d2fce48726cf267fbc0f27b0967",
+      "status": "new"
+    },
+    "basic_knowledge/method_frame/\u50cf\u9ad8\u624b\u4e00\u6837\u601d\u8003\uff1a\u8ba9\u4f60\u8131\u9896\u800c\u51fa\u7684100\u4e2a\u9876\u7ea7\u601d\u7ef4\u6a21\u578b - \u5229\u5179.pdf": {
+      "error": null,
+      "extracted_count": 0,
+      "file": "basic_knowledge/method_frame/\u50cf\u9ad8\u624b\u4e00\u6837\u601d\u8003\uff1a\u8ba9\u4f60\u8131\u9896\u800c\u51fa\u7684100\u4e2a\u9876\u7ea7\u601d\u7ef4\u6a21\u578b - \u5229\u5179.pdf",
+      "last_ingested_at": "2025-09-19T04:01:21+00:00",
+      "mtime": 1758253251,
+      "sha256": "5761b8d06ea8f580840de645d4a53b762eb9f5292b63df408e57c246d18008a7",
+      "status": "new"
+    },
+    "basic_knowledge/method_frame/\u67e5\u7406\u00b7\u8292\u683c\u7684 100 \u4e2a\u601d\u7ef4\u6a21\u578b\u7814\u7a76.pdf": {
+      "error": null,
+      "extracted_count": 0,
+      "file": "basic_knowledge/method_frame/\u67e5\u7406\u00b7\u8292\u683c\u7684 100 \u4e2a\u601d\u7ef4\u6a21\u578b\u7814\u7a76.pdf",
+      "last_ingested_at": "2025-09-19T04:01:21+00:00",
+      "mtime": 1758253251,
+      "sha256": "a081a57e6828307a208e6383386988e5a152d389036fca3bdec48c2fa2a7422f",
+      "status": "new"
+    }
+  },
+  "metadata": {
+    "created_at": "2025-09-19T04:01:21+00:00",
+    "file_count": 4,
+    "last_run": "2025-09-19T04:01:21+00:00",
+    "updated_at": "2025-09-19T04:01:21+00:00"
+  }
+}
