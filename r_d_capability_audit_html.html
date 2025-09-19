@@ -29,10 +29,6 @@
   .stickybar{position:sticky;top:0;background:#fff;border-bottom:1px solid #eee;padding:10px 0;margin:-10px 0 14px}
   .btn{cursor:pointer;border:1px solid #ddd;background:#fff;border-radius:8px;padding:8px 12px}
   .btn:hover{background:#f6f6f6}
-  details.rubric{margin-top:6px;font-size:12px}
-  details.rubric summary{cursor:pointer;color:#0366d6}
-  details.rubric ul{margin:6px 0 0 18px;padding:0;list-style:disc}
-  details.rubric li{margin-bottom:4px}
   #hovercard{position:fixed;z-index:9999;max-width:420px;background:#111;color:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:12px 14px;font-size:13px;line-height:1.5;display:none}
   #hovercard h5{margin:6px 0 4px;font-size:12px;color:#a7c7ff}
   #hovercard ul{margin:0 0 6px 16px;padding:0}
@@ -223,20 +219,6 @@ function bindHovercard(){
   window.addEventListener("resize", hide);
 }
 
-function buildRubric(question){
-  if(!question || !question.rubric) return "";
-  const items = ["1","2","3","4","5"].map(level => {
-    const content = question.rubric[level] ? escapeHtml(question.rubric[level]) : "";
-    return `<li><b>${level}分：</b>${content}</li>`;
-  }).join("");
-  return `
-    <details class="rubric">
-      <summary>查看打分口径</summary>
-      <ul>${items}</ul>
-    </details>
-  `;
-}
-
 function renderModules(modules){
   const host = document.getElementById("modules");
   if(!host) return;
@@ -246,7 +228,6 @@ function renderModules(modules){
         <td>${idx + 1}</td>
         <td class="qtext" data-module="${module.key}" data-index="${idx}" tabindex="0">
           <div>${escapeHtml(q.text)}</div>
-          ${buildRubric(q)}
         </td>
         <td class="score-cell">
           ${renderScorebox(module.key, idx)}
@@ -273,6 +254,7 @@ function renderModules(modules){
     `;
   }).join("");
   host.innerHTML = html;
+  host.querySelectorAll('details.rubric').forEach(el => el.remove());
   bindHovercard();
   moduleAverages.clear();
 }
