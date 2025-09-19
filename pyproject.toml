@@ -7,7 +7,7 @@ name = "method-harvester"
 version = "0.1.0"
 description = "Knowledge harvester for thinking models and methodologies"
 authors = [{name = "Codex Agent"}]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 keywords = ["knowledge-base", "frameworks", "harvester"]
 classifiers = [
   "Programming Language :: Python :: 3",
