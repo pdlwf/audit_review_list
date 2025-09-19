@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+from collections import Counter
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, cast
@@ -74,7 +75,14 @@ def command_scan(args: argparse.Namespace) -> None:
     paths = HarvesterPaths(root, target)
     logger.info("Scanning %s", target)
     paths.harvest_dir.mkdir(parents=True, exist_ok=True)
-    items, files = parser.scan_directory(target, root)
+    pdf_backends = parse_backend_list(getattr(args, "pdf_backends", None))
+    min_pdf_chars = parser.resolve_min_pdf_chars(getattr(args, "min_pdf_chars", None))
+    items, files = parser.scan_directory(
+        target,
+        root,
+        min_pdf_chars=min_pdf_chars,
+        pdf_backends=pdf_backends,
+    )
     timestamp = normalize.now_iso()
     normalized_items = [normalize.normalize_item(item, timestamp=timestamp) for item in items]
     write_jsonl(paths.extracted_path, [item.to_dict() for item in normalized_items])
@@ -104,6 +112,7 @@ def command_update(args: argparse.Namespace) -> None:
             extracted_count=int(entry.get("extracted_count", 0)),
             status=entry.get("status", "pending"),
             error=entry.get("error"),
+            pdf_meta=entry.get("pdf_meta"),
         )
         for file_path, entry in (scan_report.get("files", {}) if scan_report else {}).items()
     }
@@ -138,14 +147,22 @@ def command_check(args: argparse.Namespace) -> None:
     target = resolve_target(root, args.target)
     paths = HarvesterPaths(root, target)
     manifest_data = manifest.load_manifest(paths.manifest_path)
-    _, scan_results = parser.scan_directory(target, root)
+    pdf_backends = parse_backend_list(getattr(args, "pdf_backends", None))
+    min_pdf_chars = parser.resolve_min_pdf_chars(getattr(args, "min_pdf_chars", None))
+    _, scan_results = parser.scan_directory(
+        target,
+        root,
+        min_pdf_chars=min_pdf_chars,
+        pdf_backends=pdf_backends,
+    )
     statuses = []
     for file_path, result in scan_results.items():
         previous = manifest_data.get("files", {}).get(file_path)
         status = manifest.determine_status(previous, result)
         statuses.append((file_path, status, result.extracted_count))
     missing = [path for path in (manifest_data.get("files", {}) or {}) if path not in scan_results]
-    print_status_table(statuses, missing, manifest_data)
+    pdf_rollup = format_pdf_rollup(scan_results, min_pdf_chars)
+    print_status_table(statuses, missing, manifest_data, pdf_rollup=pdf_rollup)
 
 
 def write_jsonl(path: Path, items: Iterable[dict[str, Any]]) -> None:
@@ -179,6 +196,7 @@ def write_scan_report(
             "items": sum(result.extracted_count for result in files.values()),
         },
     }
+    paths.scan_report_path.parent.mkdir(parents=True, exist_ok=True)
     with paths.scan_report_path.open("w", encoding="utf-8") as fh:
         json.dump(report, fh, indent=2)
 
@@ -194,6 +212,8 @@ def print_status_table(
     statuses: list[tuple[str, str, int]],
     missing: list[str],
     manifest_data: Mapping[str, Any],
+    *,
+    pdf_rollup: str | None = None,
 ) -> None:
     print("File".ljust(70), "Status".ljust(12), "Extracted")
     print("-" * 95)
@@ -201,8 +221,54 @@ def print_status_table(
         print(file_path.ljust(70), status.ljust(12), str(count))
     for missing_path in missing:
         print(missing_path.ljust(70), "missing".ljust(12), "-")
+    if pdf_rollup:
+        print("\n" + pdf_rollup)
     metadata = manifest_data.get("metadata", {})
     print("\nLast run:", metadata.get("last_run", "never"))
+
+
+def parse_backend_list(value: str | None) -> list[str] | None:
+    if not value:
+        return None
+    parts = [entry.strip() for entry in value.split(",") if entry.strip()]
+    return parts or None
+
+
+def format_pdf_rollup(
+    scan_results: Mapping[str, parser.FileScanResult],
+    min_pdf_chars: int,
+) -> str | None:
+    pdf_entries = [
+        (path, result)
+        for path, result in scan_results.items()
+        if path.lower().endswith(".pdf")
+    ]
+    if not pdf_entries:
+        return None
+    ok = short = error = 0
+    backend_counter: Counter[str] = Counter()
+    for _, result in pdf_entries:
+        meta = result.pdf_meta or {}
+        backend = str(meta.get("backend", "none"))
+        chars = int(meta.get("chars", 0) or 0)
+        error_message = meta.get("error")
+        if result.status == "error" or error_message:
+            error += 1
+            continue
+        if backend == "none" or chars < min_pdf_chars:
+            short += 1
+            continue
+        ok += 1
+        backend_counter[backend] += 1
+    total = len(pdf_entries)
+    if backend_counter:
+        top_backend, top_count = backend_counter.most_common(1)[0]
+    else:
+        top_backend, top_count = ("none", 0)
+    return (
+        f"PDF: {total} files | ok: {ok} | short: {short} | error: {error} "
+        f"| top backend: {top_backend} ({top_count}x)"
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -213,6 +279,15 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser_obj.add_subparsers(dest="command")
 
     scan_parser = subparsers.add_parser("scan", help="Scan for method frameworks")
+    scan_parser.add_argument(
+        "--pdf-backends",
+        help="Comma-separated PDF extraction backend order (overrides HARVEST_PDF_BACKENDS)",
+    )
+    scan_parser.add_argument(
+        "--min-pdf-chars",
+        type=int,
+        help="Minimum characters required from a PDF (overrides HARVEST_MIN_PDF_CHARS)",
+    )
     scan_parser.set_defaults(func=command_scan)
 
     update_parser = subparsers.add_parser("update", help="Update registry from latest scan")
@@ -222,6 +297,15 @@ def build_parser() -> argparse.ArgumentParser:
     render_parser.set_defaults(func=command_render)
 
     check_parser = subparsers.add_parser("check", help="Dry-run status check")
+    check_parser.add_argument(
+        "--pdf-backends",
+        help="Comma-separated PDF extraction backend order (overrides HARVEST_PDF_BACKENDS)",
+    )
+    check_parser.add_argument(
+        "--min-pdf-chars",
+        type=int,
+        help="Minimum characters required from a PDF (overrides HARVEST_MIN_PDF_CHARS)",
+    )
     check_parser.set_defaults(func=command_check)
 
     return parser_obj
