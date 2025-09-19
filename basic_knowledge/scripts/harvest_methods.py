@@ -9,26 +9,37 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, cast
 
-from method_harvester import manifest, normalize, parser, registry, renderer
-from method_harvester.normalize import NormalizedItem
+from basic_knowledge.method_harvester import (
+    manifest,
+    normalize,
+    parser,
+    registry,
+    renderer,
+)
+from basic_knowledge.method_harvester.normalize import NormalizedItem
 
-DEFAULT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_TARGET = DEFAULT_ROOT / "basic_knowledge" / "method_frame"
+DEFAULT_INDEX = DEFAULT_ROOT / "basic_knowledge" / "_index"
 
 
 class HarvesterPaths:
-    def __init__(self, root: Path, target: Path) -> None:
+    def __init__(self, root: Path, target: Path, index_dir: Path | None = None) -> None:
         self.root = root
         self.target = target
-        self.harvest_dir = root / ".harvest" / "out"
-        self.extracted_path = self.harvest_dir / "extracted.jsonl"
-        self.scan_report_path = self.harvest_dir / "scan_report.json"
-        self.index_dir = target / "_index"
+        if root == DEFAULT_ROOT:
+            default_index = DEFAULT_INDEX
+        else:
+            default_index = root / "basic_knowledge" / "_index"
+        self.index_dir = (index_dir or default_index).resolve()
+        self.harvest_dir = self.index_dir
+        self.extracted_path = self.index_dir / "extracted.jsonl"
+        self.scan_report_path = self.index_dir / "scan_report.json"
         self.registry_path = self.index_dir / "registry.json"
         self.manifest_path = self.index_dir / "manifest.json"
         self.summary_path = self.index_dir / "SUMMARY.md"
 
-logger = logging.getLogger("method_harvester.cli")
+logger = logging.getLogger("basic_knowledge.method_harvester.cli")
 
 
 def configure_logging(verbose: bool = False) -> None:

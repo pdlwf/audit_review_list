@@ -6,7 +6,13 @@ from typing import Any, cast
 
 import pytest
 
-from method_harvester import manifest, normalize, parser, registry, renderer
+from basic_knowledge.method_harvester import (
+    manifest,
+    normalize,
+    parser,
+    registry,
+    renderer,
+)
 
 
 @pytest.fixture()
@@ -15,7 +21,7 @@ def sandbox(tmp_path: Path) -> Path:
     target = root / "basic_knowledge" / "method_frame"
     target.mkdir(parents=True)
     sample_dir = (
-        Path(__file__).resolve().parents[1]
+        Path(__file__).resolve().parents[2]
         / "basic_knowledge"
         / "method_frame"
         / "_samples"
@@ -43,7 +49,8 @@ def test_registry_idempotency(sandbox: Path) -> None:
     items, _ = parser.scan_directory(target, sandbox)
     timestamp = normalize.now_iso()
     normalized_items = [normalize.normalize_item(item, timestamp=timestamp) for item in items]
-    registry_path = target / "_index" / "registry.json"
+    index_dir = sandbox / "basic_knowledge" / "_index"
+    registry_path = index_dir / "registry.json"
     registry_data = registry.ensure_registry()
     added, updated = registry.merge_into_registry(registry_data, normalized_items)
     assert len(added) == len(normalized_items)
@@ -74,7 +81,7 @@ def test_renderer_outputs_table(sandbox: Path, tmp_path: Path) -> None:
     normalized_items = [normalize.normalize_item(item, timestamp=timestamp) for item in items]
     reg = registry.ensure_registry()
     registry.merge_into_registry(reg, normalized_items)
-    index_dir = target / "_index"
+    index_dir = sandbox / "basic_knowledge" / "_index"
     index_dir.mkdir(parents=True, exist_ok=True)
     registry_path = index_dir / "registry.json"
     manifest_path = index_dir / "manifest.json"

@@ -20,7 +20,7 @@ def load_registry(base_path: Path) -> dict[str, Any]:
     """Convenience wrapper to load the registry from ``base_path``."""
     from .registry import load_registry
 
-    index_dir = base_path / "basic_knowledge" / "method_frame" / "_index"
+    index_dir = base_path / "basic_knowledge" / "_index"
     registry_path = index_dir / "registry.json"
     return load_registry(registry_path)
 

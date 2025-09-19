@@ -7,16 +7,16 @@ install:
 	python -m pip install -e .[dev]
 
 scan:
-	python scripts/harvest_methods.py scan
+	PYTHONPATH=. python basic_knowledge/scripts/harvest_methods.py scan
 
 update:
-	python scripts/harvest_methods.py update
+	PYTHONPATH=. python basic_knowledge/scripts/harvest_methods.py update
 
 render:
-	python scripts/harvest_methods.py render
+	PYTHONPATH=. python basic_knowledge/scripts/harvest_methods.py render
 
 check:
-	python scripts/harvest_methods.py check
+	PYTHONPATH=. python basic_knowledge/scripts/harvest_methods.py check
 
 test:
 	ruff check .
