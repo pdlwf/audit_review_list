@@ -29,7 +29,10 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["method_harvester"]
+packages = [
+  "basic_knowledge",
+  "basic_knowledge.method_harvester",
+]
 
 [tool.ruff]
 line-length = 100
@@ -46,5 +49,5 @@ show_error_codes = true
 
 [tool.pytest.ini_options]
 addopts = "-ra"
-testpaths = ["tests"]
+testpaths = ["basic_knowledge/tests"]
 

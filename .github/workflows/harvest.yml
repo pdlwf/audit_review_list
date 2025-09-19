@@ -3,13 +3,7 @@ name: Harvest Method Frameworks
 on:
   push:
     paths:
-      - "basic_knowledge/method_frame/**"
-      - "scripts/harvest_methods.py"
-      - "method_harvester/**"
-      - "tests/**"
-      - "Makefile"
-      - "pyproject.toml"
-      - "README_harvester.md"
+      - "basic_knowledge/**"
   workflow_dispatch: {}
 
 jobs:
@@ -21,17 +15,27 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -e .[dev] pypdf python-docx beautifulsoup4 lxml ruff mypy pytest
+      - name: Guard against legacy harvester paths
+        run: |
+          set -e
+          pattern='from method_harvester|import method_harvester|scripts/harvest_methods.py|basic_knowledge/method_frame/_index'
+          if git grep -nE "$pattern" -- ':!*.md' ':!*.rst' ':!docs/**' ':!CHANGELOG*'; then
+            echo "Legacy path references detected."
+            exit 1
+          else
+            echo "Legacy path check passed."
+          fi
       - run: make check
       - run: make test
       - run: |
-          python scripts/harvest_methods.py scan
-          python scripts/harvest_methods.py update
-          python scripts/harvest_methods.py render
+          python basic_knowledge/scripts/harvest_methods.py scan
+          python basic_knowledge/scripts/harvest_methods.py update
+          python basic_knowledge/scripts/harvest_methods.py render
       - name: Commit updates
         run: |
           git config user.name "harvest-bot"
           git config user.email "harvest-bot@users.noreply.github.com"
-          git add basic_knowledge/method_frame/_index
+          git add basic_knowledge/_index
           git commit -m "chore(harvest): update registry & summary [skip ci]" || echo "no changes"
           git push
 

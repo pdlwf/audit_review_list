@@ -11,9 +11,9 @@ humans and automation.
 python -m venv .venv
 source .venv/bin/activate
 pip install -e .[dev]
-python scripts/harvest_methods.py scan
-python scripts/harvest_methods.py update
-python scripts/harvest_methods.py render
+python basic_knowledge/scripts/harvest_methods.py scan
+python basic_knowledge/scripts/harvest_methods.py update
+python basic_knowledge/scripts/harvest_methods.py render
 ```
 
 Use `--root` to point the CLI to another checkout or sandbox. The `check`
@@ -21,18 +21,19 @@ command performs a dry-run to show which files would be parsed and whether they
 changed since the last update.
 
 ```bash
-python scripts/harvest_methods.py check --verbose
+python basic_knowledge/scripts/harvest_methods.py check --verbose
 ```
 
 ## Workflow
 
 1. Run `scan` to parse the knowledge base. Results are written to
-   `.harvest/out/extracted.jsonl` and `.harvest/out/scan_report.json`.
+   `basic_knowledge/_index/extracted.jsonl` and
+   `basic_knowledge/_index/scan_report.json`.
 2. Run `update` to merge the extracted methods into the persistent registry at
-   `basic_knowledge/method_frame/_index/registry.json` and refresh
+   `basic_knowledge/_index/registry.json` and refresh
    `manifest.json`.
 3. Run `render` to rebuild the human-oriented cheat sheet in
-   `basic_knowledge/method_frame/_index/SUMMARY.md`.
+   `basic_knowledge/_index/SUMMARY.md`.
 
 The registry enforces stable item IDs and merges duplicates by comparing names,
 aliases, and behavioural signatures. Per-file manifests record the SHA-256
@@ -45,10 +46,10 @@ The repository includes `make` targets for common tasks:
 ```bash
 make venv     # create a virtual environment in .venv
 make install  # install editable project with dev dependencies
-make scan     # python scripts/harvest_methods.py scan
-make update   # python scripts/harvest_methods.py update
-make render   # python scripts/harvest_methods.py render
-make check    # python scripts/harvest_methods.py check
+make scan     # python basic_knowledge/scripts/harvest_methods.py scan
+make update   # python basic_knowledge/scripts/harvest_methods.py update
+make render   # python basic_knowledge/scripts/harvest_methods.py render
+make check    # python basic_knowledge/scripts/harvest_methods.py check
 make test     # run ruff, mypy, and pytest
 ```
 
@@ -61,6 +62,7 @@ make test     # run ruff, mypy, and pytest
 - **No items detected** – ensure section headings contain words such as
   "method", "model", or "framework", or add explicit metadata fields (Type,
   Steps, When to use, Tags, etc.).
-- **Idempotency checks failing** – clean out `.harvest/out/` and rerun `scan`
+- **Idempotency checks failing** – remove `basic_knowledge/_index/extracted.jsonl`
+  and rerun `scan`
   to refresh the extracted cache before updating.
 
