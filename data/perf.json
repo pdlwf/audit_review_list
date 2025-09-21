@@ -2,18 +2,18 @@
   "key": "perf",
   "name": {
     "zh": "8. 研发绩效与持续改进",
-    "en": "8. 研发绩效与持续改进"
+    "en": "8. R&D Performance & Continuous Improvement"
   },
   "intent": {
     "zh": "确认以数据驱动提升效率与质量，客户反馈闭环到设计",
-    "en": "确认以数据驱动提升效率与质量，客户反馈闭环到设计"
+    "en": "Ensure data-driven improvements in efficiency and quality with customer feedback closing back into design."
   },
   "questions": [
     {
       "id": "perf-是否设定并跟踪研发-kpi-一期通过率-缺陷密度-按期率-返工率-rma-ppm",
       "text": {
         "zh": "是否设定并跟踪研发 KPI（一期通过率/缺陷密度/按期率/返工率/RMA/ppm）？",
-        "en": "是否设定并跟踪研发 KPI（一期通过率/缺陷密度/按期率/返工率/RMA/ppm）？"
+        "en": "Do we define and track R&D KPIs (first-pass yield, defect density, on-time rate, rework rate, RMA, ppm)?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "KPI 数据实时可视化，与激励/改进机制闭环。"
         },
         "en": {
-          "1": "无研发 KPI 或仅口头关注。",
-          "2": "有 KPI 指标但数据收集不完整。",
-          "3": "KPI 定期统计并通报，用于项目评估。",
-          "4": "KPI 结合目标对比与根因分析，推动改进。",
-          "5": "KPI 数据实时可视化，与激励/改进机制闭环。"
+          "1": "No R&D KPIs or only informal attention.",
+          "2": "KPIs exist but data collection is incomplete.",
+          "3": "KPIs are compiled and shared regularly for project review.",
+          "4": "KPIs are compared against targets with root-cause analysis to drive improvements.",
+          "5": "KPI data is visualized in real time and ties into incentive and improvement mechanisms."
         }
       },
       "meta": {
@@ -52,20 +52,20 @@
         },
         "en": {
           "focus": [
-            "研发 KPI 指标体系",
-            "数据采集与可视化",
-            "指标驱动改进机制"
+            "R&D KPI framework",
+            "Data collection and visualization",
+            "Mechanisms that drive improvements via metrics"
           ],
           "ask": [
-            "关键 KPI 如何计算？",
-            "指标异常如何触发行动？"
+            "How are key KPIs calculated?",
+            "How do metric exceptions trigger actions?"
           ],
           "evidence": [
-            "KPI 看板或报表",
-            "指标分析与改进行动"
+            "KPI dashboard or report",
+            "Metric analysis and improvement actions"
           ],
           "threshold": [
-            "核心 KPI 常态化监控并驱动改进"
+            "Core KPIs are monitored routinely and drive improvements"
           ]
         }
       }
@@ -74,7 +74,7 @@
       "id": "perf-是否开展项目复盘-ll-lessons-learned-并沉淀为设计与工艺标准",
       "text": {
         "zh": "是否开展项目复盘/LL（Lessons Learned）并沉淀为设计与工艺标准？",
-        "en": "是否开展项目复盘/LL（Lessons Learned）并沉淀为设计与工艺标准？"
+        "en": "Do we run project retrospectives/Lessons Learned and feed them into design and process standards?"
       },
       "rubric": {
         "zh": {
@@ -85,11 +85,11 @@
           "5": "LL 库与项目流程结合，自动提醒复用并衡量成效。"
         },
         "en": {
-          "1": "无项目复盘或经验沉淀机制。",
-          "2": "零散复盘，输出未标准化。",
-          "3": "定期开展复盘并形成 Lessons Learned 文档。",
-          "4": "复盘结论转化为规范/检查表并跟踪落实。",
-          "5": "LL 库与项目流程结合，自动提醒复用并衡量成效。"
+          "1": "No project retrospectives or knowledge retention mechanism.",
+          "2": "Retrospectives are ad-hoc with non-standard outputs.",
+          "3": "Retrospectives happen regularly with Lessons Learned documentation.",
+          "4": "Retrospective outcomes become standards/checklists with tracked implementation.",
+          "5": "Lessons Learned repository integrates with project flow, prompting reuse and measuring impact."
         }
       },
       "meta": {
@@ -121,28 +121,28 @@
         },
         "en": {
           "focus": [
-            "设计规范覆盖领域",
-            "版本管理与发布机制",
-            "培训与稽核联动",
-            "项目复盘节奏与范围",
-            "知识沉淀与标准回写",
-            "复用提醒与成效衡量"
+            "Design standard coverage scope",
+            "Version control and release mechanism",
+            "Linkage between training and audits",
+            "Cadence and scope of project retrospectives",
+            "Knowledge capture and standard updates",
+            "Reuse reminders and impact measurement"
           ],
           "ask": [
-            "规范如何归档与受控？",
-            "版本更新如何通知到项目？",
-            "复盘输出如何归档？",
-            "回写标准后如何验证执行？"
+            "How are standards archived and controlled?",
+            "How are version updates communicated to projects?",
+            "How are retrospective outputs archived?",
+            "How is execution verified after standards are updated?"
           ],
           "evidence": [
-            "规范清单/版本记录",
-            "培训签到或稽核报告",
-            "复盘/LL 文档",
-            "回写标准与跟踪记录"
+            "Standards inventory and version history",
+            "Training attendance or audit report",
+            "Retrospective/Lessons Learned documents",
+            "Standard updates and tracking records"
           ],
           "threshold": [
-            "关键设计规范受控且及时更新",
-            "复盘成果沉淀并在项目中复用"
+            "Critical design standards are controlled and updated promptly",
+            "Retrospective outcomes are captured and reused in projects"
           ]
         }
       }

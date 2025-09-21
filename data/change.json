@@ -2,18 +2,18 @@
   "key": "change",
   "name": {
     "zh": "6. 变更与配置管理（ECN/BOM/版本）",
-    "en": "6. 变更与配置管理（ECN/BOM/版本）"
+    "en": "6. Change & Configuration Management (ECN/BOM/Versions)"
   },
   "intent": {
     "zh": "确认研发变更受控、版本与样机/批次可双向追溯",
-    "en": "确认研发变更受控、版本与样机/批次可双向追溯"
+    "en": "Ensure engineering changes are controlled and versions are bi-directionally traceable with prototypes and batches."
   },
   "questions": [
     {
       "id": "change-需求-设计变更是否执行-ecr-ecn-流程并进行成本-进度-质量影响评估",
       "text": {
         "zh": "需求/设计变更是否执行 ECR→ECN 流程并进行成本/进度/质量影响评估？",
-        "en": "需求/设计变更是否执行 ECR→ECN 流程并进行成本/进度/质量影响评估？"
+        "en": "Do requirements/design changes follow the ECR→ECN process with cost, schedule, and quality impact assessments?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "变更流程与项目系统集成，影响数据实时分析与预警。"
         },
         "en": {
-          "1": "无正式 ECR/ECN 流程，变更记录缺失。",
-          "2": "有流程但执行零散，影响评估模板不完整。",
-          "3": "ECR→ECN 流程运行，影响评估与审批记录完整。",
-          "4": "评估结论与验证计划闭环，实施状态可追溯。",
-          "5": "变更流程与项目系统集成，影响数据实时分析与预警。"
+          "1": "No formal ECR/ECN process and change records are missing.",
+          "2": "Process exists but execution is ad-hoc with incomplete impact assessment templates.",
+          "3": "ECR→ECN process executes with complete impact assessments and approval records.",
+          "4": "Assessment conclusions and validation plans are closed with traceable implementation status.",
+          "5": "Change process integrates with the project system, providing real-time impact analytics and alerts."
         }
       },
       "meta": {
@@ -61,29 +61,29 @@
         },
         "en": {
           "focus": [
-            "ECR→ECN 流程",
-            "影响评估维度",
-            "验证计划与实施跟踪",
-            "端到端流程阶段与交付物",
-            "角色职责与门禁判定",
-            "流程执行记录与复盘"
+            "ECR→ECN process",
+            "Impact assessment dimensions",
+            "Validation plans and execution tracking",
+            "End-to-end process stages and deliverables",
+            "Role responsibilities and gate criteria",
+            "Process execution records and retrospectives"
           ],
           "ask": [
-            "影响评估包含哪些输入？",
-            "ECN 实施状态如何追踪？",
-            "NPI 流程的关键 Gate 是哪些？",
-            "Entry/Exit 判定如何落地？"
+            "What inputs are covered in the impact assessment?",
+            "How is ECN implementation status tracked?",
+            "What are the key gates in the NPI process?",
+            "How are Entry/Exit criteria enforced?"
           ],
           "evidence": [
-            "ECR/ECN 台账",
-            "影响评估与验证记录",
-            "流程文档/流程图",
-            "阶段评审纪要与交付物清单"
+            "ECR/ECN register",
+            "Impact assessment and validation records",
+            "Process documents/flowcharts",
+            "Phase review minutes and deliverable list"
           ],
           "threshold": [
-            "所有变更均完成影响评估与验证闭环",
-            "端到端流程文件化并执行",
-            "关键 Gate 结果可追溯"
+            "Every change completes impact assessment and validation closure",
+            "End-to-end process is documented and executed",
+            "Key gate outcomes are traceable"
           ]
         }
       }
@@ -92,7 +92,7 @@
       "id": "change-bom-图纸-固件是否在-plm-alm-中实现单一数据源与权限控制",
       "text": {
         "zh": "BOM/图纸/固件是否在 PLM/ALM 中实现单一数据源与权限控制？",
-        "en": "BOM/图纸/固件是否在 PLM/ALM 中实现单一数据源与权限控制？"
+        "en": "Do BOMs, drawings, and firmware use a single source of truth with access control in PLM/ALM?"
       },
       "rubric": {
         "zh": {
@@ -103,11 +103,11 @@
           "5": "数据主线与配置管理系统打通，自动同步并可审计。"
         },
         "en": {
-          "1": "BOM/图纸/固件分散管理，缺乏权限控制。",
-          "2": "部分资料入库但版本控制不一致。",
-          "3": "在 PLM/ALM 中维护单一数据源并设定权限。",
-          "4": "版本更替有审批轨迹，与制造/供应链同步。",
-          "5": "数据主线与配置管理系统打通，自动同步并可审计。"
+          "1": "BOMs, drawings, and firmware are managed separately with no access control.",
+          "2": "Some data is stored but version control is inconsistent.",
+          "3": "A single source is maintained in PLM/ALM with defined permissions.",
+          "4": "Version changes have approval traces and stay in sync with manufacturing and supply chain.",
+          "5": "Data backbone links with configuration management, syncing automatically with auditability."
         }
       },
       "meta": {
@@ -131,20 +131,20 @@
         },
         "en": {
           "focus": [
-            "PLM/ALM 单一数据源",
-            "权限与版本控制",
-            "变更同步机制"
+            "Single source of truth in PLM/ALM",
+            "Permission and version control",
+            "Change synchronization mechanism"
           ],
           "ask": [
-            "资料如何纳入 PLM/ALM？",
-            "权限与版本如何审批？"
+            "How is data ingested into PLM/ALM?",
+            "How are permissions and versions approved?"
           ],
           "evidence": [
-            "系统截图或配置说明",
-            "权限矩阵与操作记录"
+            "System screenshots or configuration notes",
+            "Permission matrix and activity log"
           ],
           "threshold": [
-            "关键数据在系统中受控且版本可追溯"
+            "Critical data is controlled with traceable versions in the system"
           ]
         }
       }
@@ -153,7 +153,7 @@
       "id": "change-样机-批次与版本是否可双向追溯-where-used-as-built",
       "text": {
         "zh": "样机/批次与版本是否可双向追溯（Where Used/As-built）？",
-        "en": "样机/批次与版本是否可双向追溯（Where Used/As-built）？"
+        "en": "Can prototypes/batches trace versions bi-directionally (Where Used/As-built)?"
       },
       "rubric": {
         "zh": {
@@ -164,11 +164,11 @@
           "5": "追溯系统可视化，支持逆向分析与批量预警。"
         },
         "en": {
-          "1": "样机或批次无法追溯所用版本。",
-          "2": "存在零散追溯记录，查询效率低。",
-          "3": "建立双向追溯台账，可关联主要样机与版本。",
-          "4": "追溯信息实时更新，支持快速定位影响范围。",
-          "5": "追溯系统可视化，支持逆向分析与批量预警。"
+          "1": "Prototypes or batches cannot trace the versions used.",
+          "2": "Traceability records exist but are scattered and inefficient.",
+          "3": "Bi-directional trace ledger links key prototypes to versions.",
+          "4": "Traceability updates in real time to quickly identify impact scope.",
+          "5": "Traceability system is visualized, enabling reverse analysis and batch alerts."
         }
       },
       "meta": {
@@ -192,20 +192,20 @@
         },
         "en": {
           "focus": [
-            "样机/批次与版本对应关系",
-            "Where Used/As-built 数据",
-            "追溯查询效率"
+            "Prototype/batch to version mapping",
+            "Where Used/As-built data",
+            "Traceability query efficiency"
           ],
           "ask": [
-            "如何快速定位受影响样机？",
-            "数据是否实时更新？"
+            "How do we quickly identify affected prototypes?",
+            "Is the data updated in real time?"
           ],
           "evidence": [
-            "追溯系统截图",
-            "查询记录与响应时间"
+            "Traceability system screenshot",
+            "Query logs and response times"
           ],
           "threshold": [
-            "样机与版本双向追溯可在系统中完成"
+            "Bi-directional traceability between prototypes and versions is available in the system"
           ]
         }
       }
@@ -214,7 +214,7 @@
       "id": "change-对客户-生产-供应商的-pcn-scn-通知机制是否明确且可审计",
       "text": {
         "zh": "对客户/生产/供应商的 PCN/SCN 通知机制是否明确且可审计？",
-        "en": "对客户/生产/供应商的 PCN/SCN 通知机制是否明确且可审计？"
+        "en": "Is the PCN/SCN notification process to customers, manufacturing, and suppliers defined and auditable?"
       },
       "rubric": {
         "zh": {
@@ -225,11 +225,11 @@
           "5": "通知流程数字化，与供应商/客户系统对接并自动提醒。"
         },
         "en": {
-          "1": "无 PCN/SCN 通知机制，沟通多靠口头。",
-          "2": "有通知流程但责任与时限不明确。",
-          "3": "建立通知流程与记录，能对关键方进行确认。",
-          "4": "通知包含影响评估与应对计划，全链路可追溯。",
-          "5": "通知流程数字化，与供应商/客户系统对接并自动提醒。"
+          "1": "No PCN/SCN notification mechanism; communication is mostly verbal.",
+          "2": "Notification process exists but responsibilities and timelines are unclear.",
+          "3": "Notification process and records exist with confirmation from key parties.",
+          "4": "Notifications include impact assessments and mitigation plans with full traceability.",
+          "5": "Notification process is digital, interfacing with supplier/customer systems with automatic reminders."
         }
       },
       "meta": {
@@ -269,36 +269,36 @@
         },
         "en": {
           "focus": [
-            "供应商早期参与范围",
-            "产能/交期/生命周期评估",
-            "输入纳入设计约束",
-            "PCN/SCN 通知流程",
-            "责任人与时限",
-            "影响评估与应对",
-            "客户/法规输入感知机制",
-            "影响评估与责任划分",
-            "实施与验证闭环"
+            "Scope of early supplier involvement",
+            "Capacity, lead-time, and lifecycle assessment",
+            "Inputs captured as design constraints",
+            "PCN/SCN notification process",
+            "Owners and deadlines",
+            "Impact assessment and mitigations",
+            "Mechanism to capture customer/regulatory inputs",
+            "Impact assessment and responsibility split",
+            "Implementation and validation closure"
           ],
           "ask": [
-            "ESI 包含哪些关键评估？",
-            "评估结果如何反馈给设计？",
-            "通知流程如何触发？",
-            "如何确认对方已收到并执行？",
-            "外部输入如何捕获并派发？",
-            "影响评估包含哪些维度？"
+            "What evaluations are covered in ESI?",
+            "How are assessment results fed back into design?",
+            "How is the notification process triggered?",
+            "How do we confirm recipients have received and acted?",
+            "How are external inputs captured and dispatched?",
+            "Which dimensions are covered in the impact assessment?"
           ],
           "evidence": [
-            "供应商评估报告",
-            "约束清单与行动计划",
-            "PCN/SCN 台账",
-            "影响评估与应对计划",
-            "外部输入台账",
-            "评估与落实计划"
+            "Supplier assessment report",
+            "Constraint list and action plan",
+            "PCN/SCN register",
+            "Impact assessment and mitigation plan",
+            "External input register",
+            "Assessment and implementation plan"
           ],
           "threshold": [
-            "产能/生命周期评估完成并落实约束",
-            "关键通知留痕并可审计",
-            "关键外部输入均评估并形成验证计划"
+            "Capacity and lifecycle assessments are completed with constraints applied",
+            "Critical notifications are logged and auditable",
+            "All critical external inputs are assessed with validation plans"
           ]
         }
       }

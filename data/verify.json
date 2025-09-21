@@ -2,18 +2,18 @@
   "key": "verify",
   "name": {
     "zh": "4. 实验验证与测试能力",
-    "en": "4. 实验验证与测试能力"
+    "en": "4. Test & Validation Capability"
   },
   "intent": {
     "zh": "确认具备研发阶段验证手段与场景覆盖，且与目标/准则闭环",
-    "en": "确认具备研发阶段验证手段与场景覆盖，且与目标/准则闭环"
+    "en": "Confirm validation methods cover the R&D stage scenarios and close the loop with targets and criteria."
   },
   "questions": [
     {
       "id": "verify-是否建立覆盖功能-性能-可靠性-合规的测试矩阵-并与-entry-exit-对齐",
       "text": {
         "zh": "是否建立覆盖功能/性能/可靠性/合规的测试矩阵，并与 Entry/Exit 对齐？",
-        "en": "是否建立覆盖功能/性能/可靠性/合规的测试矩阵，并与 Entry/Exit 对齐？"
+        "en": "Do we have a test matrix covering function, performance, reliability, and compliance that aligns with Entry/Exit gates?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "测试数据回写到规则库，矩阵覆盖率与缺口动态维护。"
         },
         "en": {
-          "1": "无测试矩阵，测试科目依赖经验安排。",
-          "2": "按经验挑选测试科目，矩阵覆盖与门槛未定义。",
-          "3": "建立测试矩阵并列出覆盖项，但 Entry/Exit 或判定阈值未完全对齐。",
-          "4": "测试矩阵与 Entry/Exit、停线规则对齐，异常有闭环机制。",
-          "5": "测试数据回写到规则库，矩阵覆盖率与缺口动态维护。"
+          "1": "No test matrix; test items are scheduled based on experience.",
+          "2": "Tests are chosen by experience; matrix coverage and thresholds are undefined.",
+          "3": "Test matrix exists with coverage listed, but Entry/Exit or thresholds are not fully aligned.",
+          "4": "Test matrix aligns with Entry/Exit and line-stop rules with closure on anomalies.",
+          "5": "Test data feeds the rules library, maintaining coverage and gaps dynamically."
         }
       },
       "meta": {
@@ -61,29 +61,29 @@
         },
         "en": {
           "focus": [
-            "功能/性能/可靠性覆盖矩阵",
-            "Entry/Exit 与停线规则",
-            "缺口识别与整改计划",
-            "关键岗位胜任力模型覆盖度",
-            "认证/培训闭环",
-            "能力缺口与资源备份计划"
+            "Function/performance/reliability coverage matrix",
+            "Entry/Exit and line-stop rules",
+            "Gap identification and remediation plan",
+            "Coverage of the competency model for critical roles",
+            "Certification and training closure",
+            "Capability gap and resource backup plan"
           ],
           "ask": [
-            "矩阵如何维护并与项目联动？",
-            "Entry/Exit 判定依据是什么？",
-            "胜任力矩阵包含哪些岗位？",
-            "培训与认证记录如何管理？"
+            "How is the matrix maintained and linked to projects?",
+            "What drives the Entry/Exit decision?",
+            "Which roles are included in the competency matrix?",
+            "How are training and certification records managed?"
           ],
           "evidence": [
-            "测试矩阵或 coverage 报告",
-            "异常整改台账",
-            "胜任力矩阵与更新记录",
-            "培训/认证计划与考试结果"
+            "Test matrix or coverage report",
+            "Exception remediation log",
+            "Competency matrix and update records",
+            "Training/certification plans and exam results"
           ],
           "threshold": [
-            "关键场景覆盖率达成且缺口闭环",
-            "关键岗位均建立胜任力要求",
-            "能力缺口形成行动并跟踪"
+            "Coverage for critical scenarios achieved with gaps closed",
+            "Competency requirements defined for all critical roles",
+            "Capability gaps tracked with action plans"
           ]
         }
       }
@@ -92,7 +92,7 @@
       "id": "verify-是否具备关键实验室-仪器-emc-安规-esd-热像-相机-sfr-射频-或合格外部实验室",
       "text": {
         "zh": "是否具备关键实验室/仪器（EMC/安规/ESD/热像/相机 SFR/射频）或合格外部实验室？",
-        "en": "是否具备关键实验室/仪器（EMC/安规/ESD/热像/相机 SFR/射频）或合格外部实验室？"
+        "en": "Do we have critical labs/instruments (EMC, safety, ESD, thermal imaging, camera SFR, RF) or qualified external labs?"
       },
       "rubric": {
         "zh": {
@@ -103,11 +103,11 @@
           "5": "实验室能力指标化管理，容量与质量数据驱动资源规划。"
         },
         "en": {
-          "1": "缺乏关键实验室或仪器，能力无法满足需求。",
-          "2": "部分仪器具备但校准或资质缺失，外部资源无评估。",
-          "3": "关键实验室或外部资质明确，仪器清单与校准记录可追溯。",
-          "4": "仪器能力与维护计划闭环，产能与排期满足项目需求。",
-          "5": "实验室能力指标化管理，容量与质量数据驱动资源规划。"
+          "1": "Critical labs or instruments are missing; capability cannot meet needs.",
+          "2": "Some instruments exist but calibration or accreditation is missing, and external resources are unevaluated.",
+          "3": "Critical labs or external qualifications are defined with traceable instrument lists and calibration records.",
+          "4": "Instrument capability and maintenance plans are closed loop; capacity and scheduling meet project demand.",
+          "5": "Lab capability is metric-driven; capacity and quality data drive resource planning."
         }
       },
       "meta": {
@@ -178,67 +178,67 @@
         },
         "en": {
           "focus": [
-            "TVS 选型与夹持电压",
-            "回流路径与接地策略",
-            "接口目标 ESD/Surge 等级",
-            "Latch-up 与带电插拔风险",
-            "稳态+瞬态 CFD 模型",
-            "测温点校准与偏差控制",
-            "散热材料与节流策略",
-            "关键场景功耗输入",
-            "3D EM 与整机耦合分析",
-            "TRP/TIS 预算与余量",
-            "结构变更触发复核",
-            "SAR/一致性评估",
-            "MTF/SFR、OECF、畸变等全科目",
-            "OIS/AF 寿命验证",
-            "设备校准与 GR&R",
-            "报告追溯性",
-            "关键实验室/仪器配置",
-            "校准与资质维护",
-            "外部实验室评估",
-            "产能与排期"
+            "TVS selection and clamping voltage",
+            "Return path and grounding strategy",
+            "Target ESD/Surge level per interface",
+            "Latch-up and hot-plug risks",
+            "Steady and transient CFD models",
+            "Temperature measurement point calibration and deviation control",
+            "Thermal materials and throttling strategy",
+            "Power inputs for critical scenarios",
+            "3D EM and full-device coupling analysis",
+            "TRP/TIS budget and margin",
+            "Structural changes trigger rechecks",
+            "SAR and consistency evaluations",
+            "Full optics suite: MTF/SFR, OECF, distortion, etc.",
+            "OIS/AF life verification",
+            "Equipment calibration and GR&R",
+            "Report traceability",
+            "Critical lab/instrument configuration",
+            "Calibration and accreditation maintenance",
+            "External lab evaluation",
+            "Capacity and scheduling"
           ],
           "ask": [
-            "目标 ESD/Surge 等级是多少？",
-            "关键接口的 TVS BOM 与布局如何验证？",
-            "是否进行带电插拔/EFT/Latch-up 预验证？",
-            "仿真实测偏差控制在多少？",
-            "节流策略触发点如何设定？",
-            "仿真与 OTA 数据如何对齐？",
-            "多姿态 OTA 结果是否满足？",
-            "测试方法是否对标 ISO？",
-            "设备校准如何维护？",
-            "仪器校准周期如何管理？",
-            "外部实验室资质如何评估？"
+            "What ESD/Surge levels do we design for?",
+            "How do we validate the TVS BOM and layout for critical interfaces?",
+            "Do we run hot-plug/EFT/latch-up pre-validation?",
+            "What deviation do we maintain between simulation and measurement?",
+            "How are throttling triggers defined?",
+            "How do simulation and OTA data align?",
+            "Do multi-position OTA results meet expectations?",
+            "Do test methods benchmark ISO standards?",
+            "How is equipment calibration maintained?",
+            "How are instrument calibration intervals managed?",
+            "How are external lab qualifications evaluated?"
           ],
           "evidence": [
-            "IEC 61000-4-2 预验证记录",
-            "JESD78 Latch-up 报告",
-            "接口布局截图与器件曲线",
-            "CFD 报告与边界条件",
-            "温升测试表",
-            "节流/降额曲线",
-            "EM 仿真报告",
-            "VNA/OTA 测试数据",
-            "相关性比对记录",
-            "完整相机实验室报告",
-            "原始数据与曲线",
-            "校准证书或 GR&R",
-            "仪器清单与校准记录",
-            "实验室资质或委外合同"
+            "IEC 61000-4-2 pre-compliance records",
+            "JESD78 latch-up report",
+            "Interface layout snapshots and device curves",
+            "CFD reports and boundary conditions",
+            "Temperature rise test sheet",
+            "Throttling/derating curves",
+            "EM simulation report",
+            "VNA/OTA test data",
+            "Correlation comparison records",
+            "Complete camera lab report",
+            "Raw data and curves",
+            "Calibration certificates or GR&R",
+            "Instrument inventory and calibration records",
+            "Laboratory accreditations or outsourcing contracts"
           ],
           "threshold": [
-            "接触放电≥8kV，空气放电≥15kV",
-            "异常失效注入通过且无复位",
-            "触感温度满足目标",
-            "结温低于器件上限",
-            "充电热稳定验证通过",
-            "关键频段余量满足预算并留裕量",
-            "全科目覆盖且数据可追溯",
-            "与 ORT/场景数据闭环",
-            "关键试验能力满足项目需求",
-            "产能/排期可量化管理"
+            "Contact discharge ≥8 kV, air discharge ≥15 kV",
+            "Fault injection passes with no unexpected resets",
+            "Surface touch temperature meets the target",
+            "Junction temperature stays below component limits",
+            "Charging thermal stability verification passed",
+            "Critical frequency margins meet the budget with headroom",
+            "Full subject coverage with traceable data",
+            "Closed loop with ORT/scenario data",
+            "Key test capabilities meet project requirements",
+            "Capacity and scheduling are managed quantitatively"
           ]
         }
       }
@@ -247,7 +247,7 @@
       "id": "verify-是否开展环境与寿命测试-alt-高低温循环-高湿-盐雾-汗液-并建立寿命预测模型",
       "text": {
         "zh": "是否开展环境与寿命测试（ALT/高低温循环/高湿/盐雾/汗液），并建立寿命预测模型？",
-        "en": "是否开展环境与寿命测试（ALT/高低温循环/高湿/盐雾/汗液），并建立寿命预测模型？"
+        "en": "Do we run environmental and life tests (ALT, thermal cycling, high humidity, salt fog, sweat) and build a life prediction model?"
       },
       "rubric": {
         "zh": {
@@ -258,11 +258,11 @@
           "5": "寿命模型与量产监控联动，数据驱动策略调整与预警。"
         },
         "en": {
-          "1": "无环境或寿命测试计划，风险未识别。",
-          "2": "零散开展环境或寿命测试，缺方法与记录。",
-          "3": "执行 ALT/高低温/盐雾等测试，并保留数据与判定标准。",
-          "4": "建立寿命预测模型，与测试数据比对闭环并形成改进。",
-          "5": "寿命模型与量产监控联动，数据驱动策略调整与预警。"
+          "1": "No environmental or life test plan; risks are unidentified.",
+          "2": "Environmental or life tests are sporadic with missing methods and records.",
+          "3": "ALT, thermal cycling, and salt fog tests are executed with retained data and criteria.",
+          "4": "Life prediction model established with closed-loop comparison to test data and improvements logged.",
+          "5": "Life model ties into mass-production monitoring to drive strategy adjustments and alerts."
         }
       },
       "meta": {
@@ -287,21 +287,21 @@
         },
         "en": {
           "focus": [
-            "环境/寿命测试矩阵",
-            "应力条件与判据",
-            "寿命模型与数据回写"
+            "Environmental/life test matrix",
+            "Stress conditions and decision criteria",
+            "Life model with data feedback"
           ],
           "ask": [
-            "ALT/循环测试覆盖哪些工况？",
-            "寿命模型如何建立并校准？"
+            "Which conditions do ALT or cycle tests cover?",
+            "How is the life model built and calibrated?"
           ],
           "evidence": [
-            "环境/寿命测试报告",
-            "寿命模型或拟合曲线"
+            "Environmental or life test report",
+            "Life model or fitted curve"
           ],
           "threshold": [
-            "关键环境应力测试完成并通过",
-            "寿命模型与实测数据闭环"
+            "Key environmental stress tests completed and passed",
+            "Life model closes against measured data"
           ]
         }
       }
@@ -310,7 +310,7 @@
       "id": "verify-rf-ota-暗室是否能完成-trp-tis-测试-仿真与实测的相关性如何证明",
       "text": {
         "zh": "RF/OTA 暗室是否能完成 TRP/TIS 测试？仿真与实测的相关性如何证明？",
-        "en": "RF/OTA 暗室是否能完成 TRP/TIS 测试？仿真与实测的相关性如何证明？"
+        "en": "Can the RF/OTA chamber complete TRP/TIS testing, and how is correlation to simulation demonstrated?"
       },
       "rubric": {
         "zh": {
@@ -321,11 +321,11 @@
           "5": "常态化相关性监控与模型回归；结构变更触发复核"
         },
         "en": {
-          "1": "无 OTA 能力或无报告",
-          "2": "有测试记录，方法/校准/相关性缺失",
-          "3": "可完成 TRP/TIS，相关性有初步对比",
-          "4": "方法规范，相关性阈值明确且稳定达标",
-          "5": "常态化相关性监控与模型回归；结构变更触发复核"
+          "1": "No OTA capability or reports available.",
+          "2": "Test records exist, but methods, calibration, or correlation are missing.",
+          "3": "TRP/TIS can be completed with initial correlation comparisons.",
+          "4": "Methods are standardised with clear, consistently met correlation thresholds.",
+          "5": "Correlation is monitored routinely with model regression; structural changes trigger rechecks."
         }
       },
       "meta": {
@@ -370,41 +370,41 @@
         },
         "en": {
           "focus": [
-            "3D EM 与整机耦合分析",
-            "TRP/TIS 预算与余量",
-            "结构变更触发复核",
-            "SAR/一致性评估",
-            "关键实验室/仪器配置",
-            "校准与资质维护",
-            "外部实验室评估",
-            "产能与排期",
-            "DFMEA 触发条件与台账",
-            "专项仿真模型与参数库",
-            "仿真-实测闭环",
-            "风险复核策略"
+            "3D EM and full-device coupling analysis",
+            "TRP/TIS budget and margin",
+            "Structural changes trigger rechecks",
+            "SAR and consistency evaluations",
+            "Critical lab/instrument configuration",
+            "Calibration and accreditation maintenance",
+            "External lab evaluation",
+            "Capacity and scheduling",
+            "DFMEA trigger conditions and log",
+            "Special simulation models and parameter library",
+            "Simulation-to-measurement closed loop",
+            "Risk review strategy"
           ],
           "ask": [
-            "仿真与 OTA 数据如何对齐？",
-            "多姿态 OTA 结果是否满足？",
-            "仪器校准周期如何管理？",
-            "外部实验室资质如何评估？",
-            "DFMEA 高风险如何触发专项仿真？",
-            "模型如何校准与版本化？"
+            "How do simulation and OTA data align?",
+            "Do multi-position OTA results meet expectations?",
+            "How are instrument calibration intervals managed?",
+            "How are external lab qualifications evaluated?",
+            "How do DFMEA high-risk items trigger dedicated simulations?",
+            "How are models calibrated and versioned?"
           ],
           "evidence": [
-            "EM 仿真报告",
-            "VNA/OTA 测试数据",
-            "相关性比对记录",
-            "仪器清单与校准记录",
-            "实验室资质或委外合同",
-            "专项仿真报告与模型文件",
-            "验证对比记录"
+            "EM simulation report",
+            "VNA/OTA test data",
+            "Correlation comparison records",
+            "Instrument inventory and calibration records",
+            "Laboratory accreditations or outsourcing contracts",
+            "Special simulation reports and model files",
+            "Verification comparison records"
           ],
           "threshold": [
-            "关键频段余量满足预算并留裕量",
-            "关键试验能力满足项目需求",
-            "产能/排期可量化管理",
-            "高风险项均建立仿真验证闭环"
+            "Critical frequency margins meet the budget with headroom",
+            "Key test capabilities meet project requirements",
+            "Capacity and scheduling are managed quantitatively",
+            "All high-risk items have simulation and verification closure"
           ]
         }
       }
@@ -413,7 +413,7 @@
       "id": "verify-相机实验室是否能出具-mtf-sfr-oecf-畸变-杂散光-ois-af-寿命完整报告",
       "text": {
         "zh": "相机实验室是否能出具 MTF/SFR、OECF、畸变、杂散光、OIS/AF 寿命完整报告？",
-        "en": "相机实验室是否能出具 MTF/SFR、OECF、畸变、杂散光、OIS/AF 寿命完整报告？"
+        "en": "Can the camera lab deliver complete MTF/SFR, OECF, distortion, stray light, and OIS/AF life reports?"
       },
       "rubric": {
         "zh": {
@@ -424,11 +424,11 @@
           "5": "与量产 ORT/场景数据闭环（趋势/漂移监控与规则回写）"
         },
         "en": {
-          "1": "无相机实验能力或无报告",
-          "2": "科目零散，缺方法与校准",
-          "3": "主要科目可出具，方法/校准基本合规",
-          "4": "全科目覆盖，数据可追溯、稳定复现",
-          "5": "与量产 ORT/场景数据闭环（趋势/漂移监控与规则回写）"
+          "1": "No camera lab capability or reports.",
+          "2": "Subjects are scattered with missing methods and calibration.",
+          "3": "Major subjects can be produced with essentially compliant methods and calibration.",
+          "4": "Full subject coverage with traceable, repeatable data.",
+          "5": "Closed loop with mass-production ORT/scenario data (trend/drift monitoring with rule updates)."
         }
       },
       "meta": {
@@ -474,42 +474,42 @@
         },
         "en": {
           "focus": [
-            "MTF/SFR、OECF、畸变等全科目",
-            "OIS/AF 寿命验证",
-            "设备校准与 GR&R",
-            "报告追溯性",
-            "关键实验室/仪器配置",
-            "校准与资质维护",
-            "外部实验室评估",
-            "产能与排期",
-            "环境/寿命测试矩阵",
-            "应力条件与判据",
-            "寿命模型与数据回写"
+            "Full optics suite: MTF/SFR, OECF, distortion, etc.",
+            "OIS/AF life verification",
+            "Equipment calibration and GR&R",
+            "Report traceability",
+            "Critical lab/instrument configuration",
+            "Calibration and accreditation maintenance",
+            "External lab evaluation",
+            "Capacity and scheduling",
+            "Environmental/life test matrix",
+            "Stress conditions and decision criteria",
+            "Life model with data feedback"
           ],
           "ask": [
-            "测试方法是否对标 ISO？",
-            "设备校准如何维护？",
-            "仪器校准周期如何管理？",
-            "外部实验室资质如何评估？",
-            "ALT/循环测试覆盖哪些工况？",
-            "寿命模型如何建立并校准？"
+            "Do test methods benchmark ISO standards?",
+            "How is equipment calibration maintained?",
+            "How are instrument calibration intervals managed?",
+            "How are external lab qualifications evaluated?",
+            "Which conditions do ALT or cycle tests cover?",
+            "How is the life model built and calibrated?"
           ],
           "evidence": [
-            "完整相机实验室报告",
-            "原始数据与曲线",
-            "校准证书或 GR&R",
-            "仪器清单与校准记录",
-            "实验室资质或委外合同",
-            "环境/寿命测试报告",
-            "寿命模型或拟合曲线"
+            "Complete camera lab report",
+            "Raw data and curves",
+            "Calibration certificates or GR&R",
+            "Instrument inventory and calibration records",
+            "Laboratory accreditations or outsourcing contracts",
+            "Environmental or life test report",
+            "Life model or fitted curve"
           ],
           "threshold": [
-            "全科目覆盖且数据可追溯",
-            "与 ORT/场景数据闭环",
-            "关键试验能力满足项目需求",
-            "产能/排期可量化管理",
-            "关键环境应力测试完成并通过",
-            "寿命模型与实测数据闭环"
+            "Full subject coverage with traceable data",
+            "Closed loop with ORT/scenario data",
+            "Key test capabilities meet project requirements",
+            "Capacity and scheduling are managed quantitatively",
+            "Key environmental stress tests completed and passed",
+            "Life model closes against measured data"
           ]
         }
       }

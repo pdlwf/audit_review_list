@@ -2,18 +2,18 @@
   "key": "process",
   "name": {
     "zh": "2. 研发流程与标准（NPI/IPD）",
-    "en": "2. 研发流程与标准（NPI/IPD）"
+    "en": "2. R&D Processes & Standards (NPI/IPD)"
   },
   "intent": {
     "zh": "确认端到端流程文件化并与合规/客户标准对齐",
-    "en": "确认端到端流程文件化并与合规/客户标准对齐"
+    "en": "Ensure end-to-end processes are documented and aligned with compliance and customer standards."
   },
   "questions": [
     {
       "id": "process-是否有端到端-npi-流程-需求-架构-设计-验证-移交-并落实职责分工",
       "text": {
         "zh": "是否有端到端 NPI 流程（需求→架构→设计→验证→移交），并落实职责分工？",
-        "en": "是否有端到端 NPI 流程（需求→架构→设计→验证→移交），并落实职责分工？"
+        "en": "Do we run an end-to-end NPI process (requirements → architecture → design → verification → handover) with clear role ownership?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "流程与项目管理系统集成，指标与风险自动监控。"
         },
         "en": {
-          "1": "无端到端 NPI 流程，节点靠经验推进。",
-          "2": "有流程框架但未纳入标准里程碑与角色责任。",
-          "3": "端到端 NPI 流程已文档化，关键里程碑与交付物有规定。",
-          "4": "流程结合跨部门评审与门禁，执行状态有记录与复盘。",
-          "5": "流程与项目管理系统集成，指标与风险自动监控。"
+          "1": "No end-to-end NPI process; phases advance based on personal experience.",
+          "2": "Process framework exists but lacks standard milestones and role accountability.",
+          "3": "End-to-end NPI process is documented with specified milestones and deliverables.",
+          "4": "Process ties into cross-functional reviews and gates with execution tracked and retroed.",
+          "5": "Process integrates with the project management system with automatic metric and risk monitoring."
         }
       },
       "meta": {
@@ -62,30 +62,30 @@
         },
         "en": {
           "focus": [
-            "组织架构与岗位说明书是否发布",
-            "跨团队接口人和升级路径是否明确",
-            "职责边界与权限如何维护",
-            "端到端流程阶段与交付物",
-            "角色职责与门禁判定",
-            "流程执行记录与复盘"
+            "Whether the org chart and job descriptions are published",
+            "Whether cross-team interface owners and escalation paths are clear",
+            "How role boundaries and permissions are maintained",
+            "End-to-end process stages and deliverables",
+            "Role responsibilities and gate criteria",
+            "Process execution records and retrospectives"
           ],
           "ask": [
-            "组织架构多长时间更新一次？",
-            "跨团队升级路径和 SLA 如何定义？",
-            "NPI 流程的关键 Gate 是哪些？",
-            "Entry/Exit 判定如何落地？"
+            "How often is the org chart updated?",
+            "How are cross-team escalation paths and SLAs defined?",
+            "What are the key gates in the NPI process?",
+            "How are Entry/Exit criteria enforced?"
           ],
           "evidence": [
-            "最新组织架构图与岗位说明",
-            "接口/升级流程记录",
-            "流程文档/流程图",
-            "阶段评审纪要与交付物清单"
+            "Latest org chart and job descriptions",
+            "Interface/escalation process records",
+            "Process documents or flowcharts",
+            "Phase review minutes and deliverable checklists"
           ],
           "threshold": [
-            "组织职责发布并可查询",
-            "升级路径在项目中可验证",
-            "端到端流程文件化并执行",
-            "关键 Gate 结果可追溯"
+            "Role responsibilities are published and discoverable",
+            "Escalation paths can be validated in projects",
+            "End-to-end process is documented and executed",
+            "Key gate outcomes are traceable"
           ]
         }
       }
@@ -94,7 +94,7 @@
       "id": "process-是否建立研发设计规范库-pcb-esd-射频-结构等-并保持版本可追溯",
       "text": {
         "zh": "是否建立研发设计规范库（PCB、ESD、射频、结构等）并保持版本可追溯？",
-        "en": "是否建立研发设计规范库（PCB、ESD、射频、结构等）并保持版本可追溯？"
+        "en": "Do we maintain a controlled design standards library (PCB, ESD, RF, mechanical, etc.) with version traceability?"
       },
       "rubric": {
         "zh": {
@@ -105,11 +105,11 @@
           "5": "规范与工具链/DRC 联动，变更自动通知并追踪执行。"
         },
         "en": {
-          "1": "无统一设计规范，依赖个人经验。",
-          "2": "有零散规范或旧版本，缺更新机制。",
-          "3": "关键领域建立受控的设计规范并发布。",
-          "4": "规范定期评审并关联培训/检查表，执行有记录。",
-          "5": "规范与工具链/DRC 联动，变更自动通知并追踪执行。"
+          "1": "No unified design standards; work relies on individual experience.",
+          "2": "Scattered or outdated standards with no refresh mechanism.",
+          "3": "Controlled standards exist and are published for critical domains.",
+          "4": "Standards are reviewed periodically with linked training/checklists and execution records.",
+          "5": "Standards integrate with toolchains/DRC so changes auto-notify and execution is tracked."
         }
       },
       "meta": {
@@ -173,60 +173,60 @@
         },
         "en": {
           "focus": [
-            "TVS 选型与夹持电压",
-            "回流路径与接地策略",
-            "接口目标 ESD/Surge 等级",
-            "Latch-up 与带电插拔风险",
-            "跌落/扭转/点载 CAE 与实测闭环",
-            "螺钉/卡扣/胶粘疲劳",
-            "密封公差链与透气策略",
-            "盐雾/汗液等耐蚀风险",
-            "3D EM 与整机耦合分析",
-            "TRP/TIS 预算与余量",
-            "结构变更触发复核",
-            "SAR/一致性评估",
-            "样机/批次与版本对应关系",
-            "Where Used/As-built 数据",
-            "追溯查询效率",
-            "设计规范覆盖领域",
-            "版本管理与发布机制",
-            "培训与稽核联动"
+            "TVS selection and clamping voltage",
+            "Return path and grounding strategy",
+            "Target ESD/Surge level per interface",
+            "Latch-up and hot-plug risks",
+            "Drop/twist/point-load CAE and test correlation",
+            "Screw, clip, and adhesive fatigue",
+            "Sealing tolerance stack and venting strategy",
+            "Salt-spray/sweat corrosion risks",
+            "3D EM and full-device coupling analysis",
+            "TRP/TIS budget and margin",
+            "Revalidation triggers for structural changes",
+            "SAR and consistency evaluations",
+            "Prototype/batch to version mapping",
+            "Where Used/As-built data",
+            "Traceability query efficiency",
+            "Design standard coverage scope",
+            "Version control and release mechanism",
+            "Linkage between training and audits"
           ],
           "ask": [
-            "目标 ESD/Surge 等级是多少？",
-            "关键接口的 TVS BOM 与布局如何验证？",
-            "是否进行带电插拔/EFT/Latch-up 预验证？",
-            "CAE 如何与实测比对？",
-            "密封公差链如何计算？",
-            "仿真与 OTA 数据如何对齐？",
-            "多姿态 OTA 结果是否满足？",
-            "如何快速定位受影响样机？",
-            "数据是否实时更新？",
-            "规范如何归档与受控？",
-            "版本更新如何通知到项目？"
+            "What target ESD/Surge level do we design for?",
+            "How do we validate TVS BOM and layout for critical interfaces?",
+            "Do we run hot-plug/EFT/latch-up pre-validation?",
+            "How do CAE results compare with physical testing?",
+            "How is the sealing tolerance stack calculated?",
+            "How do simulations align with OTA data?",
+            "Do multi-posture OTA results meet targets?",
+            "How do we quickly identify affected prototypes?",
+            "Is the traceability data updated in real time?",
+            "How are standards archived and controlled?",
+            "How are version updates communicated to projects?"
           ],
           "evidence": [
-            "IEC 61000-4-2 预验证记录",
-            "JESD78 Latch-up 报告",
-            "接口布局截图与器件曲线",
-            "FEA 模型与校核报告",
-            "跌落/扭转/密封测试数据",
-            "EM 仿真报告",
-            "VNA/OTA 测试数据",
-            "相关性比对记录",
-            "追溯系统截图",
-            "查询记录与响应时间",
-            "规范清单/版本记录",
-            "培训签到或稽核报告"
+            "IEC 61000-4-2 pre-compliance records",
+            "JESD78 latch-up report",
+            "Interface layout snapshots and device curves",
+            "FEA models and correlation reports",
+            "Drop/torsion/sealing test data",
+            "EM simulation reports",
+            "VNA/OTA test data",
+            "Correlation comparison records",
+            "Traceability system screenshots",
+            "Query logs and response times",
+            "Standards inventory and version history",
+            "Training attendance or audit reports"
           ],
           "threshold": [
-            "接触放电≥8kV，空气放电≥15kV",
-            "异常失效注入通过且无复位",
-            "1.5m 六面多次功能正常",
-            "IP 目标与耐蚀要求达成",
-            "关键频段余量满足预算并留裕量",
-            "样机与版本双向追溯可在系统中完成",
-            "关键设计规范受控且及时更新"
+            "Contact discharge ≥8 kV, air discharge ≥15 kV",
+            "Fault injection passes without resets",
+            "1.5 m six-face drops maintain function",
+            "Ingress protection and corrosion targets achieved",
+            "Key frequency margins meet the budget with headroom",
+            "Prototype-to-version traceability works bi-directionally",
+            "Critical design standards are controlled and refreshed promptly"
           ]
         }
       }
@@ -235,7 +235,7 @@
       "id": "process-对外部输入-客户-法规-pcn-是否建立变更感知与落地机制",
       "text": {
         "zh": "对外部输入（客户/法规/PCN）是否建立变更感知与落地机制？",
-        "en": "对外部输入（客户/法规/PCN）是否建立变更感知与落地机制？"
+        "en": "Do we maintain a mechanism to sense and implement external inputs (customer, regulatory, PCN)?"
       },
       "rubric": {
         "zh": {
@@ -246,11 +246,11 @@
           "5": "外部输入与需求/配置系统联动，落地状态可视化与预警。"
         },
         "en": {
-          "1": "无外部输入跟踪机制，信息靠个人传达。",
-          "2": "能接收外部输入但缺评估与落实记录。",
-          "3": "建立外部输入台账并指定责任人跟进落实。",
-          "4": "变更评估流程覆盖影响分析与验证计划，闭环可审计。",
-          "5": "外部输入与需求/配置系统联动，落地状态可视化与预警。"
+          "1": "No mechanism to track external inputs; information relies on individuals.",
+          "2": "External inputs are received but assessments and execution are undocumented.",
+          "3": "External input register exists with assigned owners driving closure.",
+          "4": "Change assessment covers impact analysis and validation plans with auditable closure.",
+          "5": "External inputs link to requirements/config systems with visible status and alerts."
         }
       },
       "meta": {
@@ -290,36 +290,36 @@
         },
         "en": {
           "focus": [
-            "ECR→ECN 流程",
-            "影响评估维度",
-            "验证计划与实施跟踪",
-            "PCN/SCN 通知流程",
-            "责任人与时限",
-            "影响评估与应对",
-            "客户/法规输入感知机制",
-            "影响评估与责任划分",
-            "实施与验证闭环"
+            "ECR→ECN process",
+            "Impact assessment dimensions",
+            "Validation plans and execution tracking",
+            "PCN/SCN notification process",
+            "Owners and deadlines",
+            "Impact assessment and mitigation",
+            "Mechanism to capture customer/regulatory inputs",
+            "Impact assessment and responsibility split",
+            "Implementation and validation closure"
           ],
           "ask": [
-            "影响评估包含哪些输入？",
-            "ECN 实施状态如何追踪？",
-            "通知流程如何触发？",
-            "如何确认对方已收到并执行？",
-            "外部输入如何捕获并派发？",
-            "影响评估包含哪些维度？"
+            "What inputs are covered in the impact assessment?",
+            "How is ECN implementation status tracked?",
+            "How is the notification process triggered?",
+            "How do you confirm recipients received and acted?",
+            "How are external inputs captured and dispatched?",
+            "Which dimensions are evaluated in the impact assessment?"
           ],
           "evidence": [
-            "ECR/ECN 台账",
-            "影响评估与验证记录",
-            "PCN/SCN 台账",
-            "影响评估与应对计划",
-            "外部输入台账",
-            "评估与落实计划"
+            "ECR/ECN register",
+            "Impact assessment and validation records",
+            "PCN/SCN register",
+            "Impact assessment and mitigation plan",
+            "External input register",
+            "Assessment and implementation plan"
           ],
           "threshold": [
-            "所有变更均完成影响评估与验证闭环",
-            "关键通知留痕并可审计",
-            "关键外部输入均评估并形成验证计划"
+            "Every change completes impact assessment and validation closure",
+            "Critical notifications are logged and auditable",
+            "All critical external inputs are assessed with validation plans"
           ]
         }
       }

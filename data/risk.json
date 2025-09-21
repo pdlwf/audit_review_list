@@ -2,18 +2,18 @@
   "key": "risk",
   "name": {
     "zh": "7. 风险管控（技术/进度/合规）",
-    "en": "7. 风险管控（技术/进度/合规）"
+    "en": "7. Risk Management (Technical/Schedule/Compliance)"
   },
   "intent": {
     "zh": "确认从立项起持续识别、量化并处置风险，设置缓冲与熔断机制",
-    "en": "确认从立项起持续识别、量化并处置风险，设置缓冲与熔断机制"
+    "en": "Ensure risks are continuously identified, quantified, and mitigated from project kickoff with buffers and fail-safes in place."
   },
   "questions": [
     {
       "id": "risk-是否建立项目风险台账-技术-供应-合规-资源-并对风险进行-impact-probability-量化",
       "text": {
         "zh": "是否建立项目风险台账（技术/供应/合规/资源），并对风险进行 Impact×Probability 量化？",
-        "en": "是否建立项目风险台账（技术/供应/合规/资源），并对风险进行 Impact×Probability 量化？"
+        "en": "Do we maintain a project risk register (technical/supply/compliance/resources) with Impact × Probability quantification?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "风险台账与项目指标联动，支持预警与决策。"
         },
         "en": {
-          "1": "无项目风险台账，风险靠经验沟通。",
-          "2": "有风险清单但未量化 Impact×Probability。",
-          "3": "建立风险台账并量化 Impact×Probability，指定责任人。",
-          "4": "风险状态定期更新，缓解计划执行可追溯。",
-          "5": "风险台账与项目指标联动，支持预警与决策。"
+          "1": "No project risk register; risks are shared informally.",
+          "2": "Risk list exists but without Impact × Probability quantification.",
+          "3": "Risk register exists with Impact × Probability scores and assigned owners.",
+          "4": "Risk status updates are regular with traceable mitigation execution.",
+          "5": "Risk register links to project metrics enabling warnings and decisions."
         }
       },
       "meta": {
@@ -53,21 +53,21 @@
         },
         "en": {
           "focus": [
-            "风险分类与台账",
-            "Impact×Probability 量化",
-            "责任人与更新频率"
+            "Risk categories and register",
+            "Impact × Probability scoring",
+            "Owners and update cadence"
           ],
           "ask": [
-            "风险等级如何计算？",
-            "更新频率是多少？"
+            "How is risk level calculated?",
+            "What is the update cadence?"
           ],
           "evidence": [
-            "风险台账或系统截图",
-            "更新记录与缓解计划"
+            "Risk register or system screenshot",
+            "Update log and mitigation plan"
           ],
           "threshold": [
-            "重大风险均量化并指定责任人",
-            "状态更新可追溯"
+            "All major risks are quantified with assigned owners",
+            "Status updates are traceable"
           ]
         }
       }
@@ -76,7 +76,7 @@
       "id": "risk-是否为关键风险建立-plan-b-c-替代方案-降级策略-二供切换-并有演练记录",
       "text": {
         "zh": "是否为关键风险建立 Plan B/C（替代方案/降级策略/二供切换）并有演练记录？",
-        "en": "是否为关键风险建立 Plan B/C（替代方案/降级策略/二供切换）并有演练记录？"
+        "en": "Do critical risks have Plan B/C (alternatives/derating/second-source switch) with drill records?"
       },
       "rubric": {
         "zh": {
@@ -87,11 +87,11 @@
           "5": "Plan B/C 与监控指标联动，可快速触发并复盘优化。"
         },
         "en": {
-          "1": "无应急或替代方案。",
-          "2": "有口头 Plan B/C，但无演练与记录。",
-          "3": "关键风险制定 Plan B/C 并形成文档。",
-          "4": "替代方案有演练与资源准备，切换标准明确。",
-          "5": "Plan B/C 与监控指标联动，可快速触发并复盘优化。"
+          "1": "No contingency or alternative plans.",
+          "2": "Plan B/C exists verbally without drills or records.",
+          "3": "Plan B/C is documented for critical risks.",
+          "4": "Alternatives have drills and resourcing with clear switch criteria.",
+          "5": "Plan B/C ties into monitoring metrics, enabling rapid activation and retrospective improvement."
         }
       },
       "meta": {
@@ -123,28 +123,28 @@
         },
         "en": {
           "focus": [
-            "关键物料二供策略",
-            "等效性验证覆盖功能/可靠性",
-            "切换流程与风险控制",
-            "Plan B/C 触发条件",
-            "演练与资源准备",
-            "降级策略与沟通机制"
+            "Key component second-source strategy",
+            "Equivalence validation covers functionality and reliability",
+            "Switch process and risk control",
+            "Plan B/C trigger conditions",
+            "Drills and resource preparation",
+            "Derating strategies and communication mechanisms"
           ],
           "ask": [
-            "二供验证包含哪些测试？",
-            "切换判据如何设定？",
-            "关键风险的应急方案有哪些？",
-            "演练与资源如何记录？"
+            "Which tests are included in second-source validation?",
+            "How are switch criteria defined?",
+            "What contingency plans cover critical risks?",
+            "How are drills and resources documented?"
           ],
           "evidence": [
-            "二供验证报告",
-            "可靠性/一致性数据",
-            "Plan B/C 文档",
-            "演练记录或资源清单"
+            "Second-source validation report",
+            "Reliability and consistency data",
+            "Plan B/C documentation",
+            "Drill records or resource lists"
           ],
           "threshold": [
-            "关键物料二供通过验证并备案",
-            "高风险均具备演练过的替代方案"
+            "Critical components pass second-source validation with records filed",
+            "All high-risk items have rehearsed alternative plans"
           ]
         }
       }

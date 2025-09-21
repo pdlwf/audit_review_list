@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>R&D Capability Assessment – 研发能力审核（含雷达图）</title>
+<title>R&D Capability Assessment – Radar & Checklist</title>
 <style>
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"PingFang SC","Microsoft Yahei",sans-serif;margin:24px;color:#111}
   h1,h2{margin:0 0 12px}
@@ -610,7 +610,7 @@ async function loadUI(){
   try{
     const res = await fetch(`${DATA_DIR}/i18n-ui.json?ts=${Date.now()}`);
     if(!res.ok){
-      throw new Error(`无法加载 UI 文案：${res.status}`);
+      throw new Error(`Failed to load UI copy: ${res.status}`);
     }
     UI_I18N = await res.json();
     window.UI_I18N = UI_I18N;
@@ -627,7 +627,7 @@ async function loadModules(){
     const url = `${DATA_DIR}/${key}.json?ts=${Date.now()}`;
     const response = await fetch(url);
     if(!response.ok){
-      throw new Error(`无法加载数据：${key}.json`);
+      throw new Error(`Failed to load data: ${key}.json`);
     }
     const data = await response.json();
     const moduleKey = data.key || key;
@@ -735,7 +735,7 @@ function setupActions(){
     console.error(err);
     const host = document.getElementById("modules");
     if(host){
-      host.innerHTML = `<div class="card">数据加载失败：${escapeHtml(err && err.message ? err.message : err)}</div>`;
+      host.innerHTML = `<div class="card">Data load failed: ${escapeHtml(err && err.message ? err.message : err)}</div>`;
     }
   }
 })();

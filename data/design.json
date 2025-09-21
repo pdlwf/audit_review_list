@@ -2,18 +2,18 @@
   "key": "design",
   "name": {
     "zh": "3. 设计质量与可靠性（含前期物料选型与准入）",
-    "en": "3. 设计质量与可靠性（含前期物料选型与准入）"
+    "en": "3. Design Quality & Reliability (Early Component Selection & Qualification)"
   },
   "intent": {
     "zh": "确认设计阶段内建可靠性与可制造性，并以规范与证据闭环",
-    "en": "确认设计阶段内建可靠性与可制造性，并以规范与证据闭环"
+    "en": "Ensure the design stage embeds reliability and manufacturability with standards and evidence-driven closure."
   },
   "questions": [
     {
       "id": "design-3-1-静电-浪涌与系统级保护-esd-surge",
       "text": {
         "zh": "是否在设计阶段明确各接口/关键器件的系统级 ESD/Surge 目标并完成方案验证（含带电插拔/瞬变），且设计变更会触发复核？",
-        "en": "是否在设计阶段明确各接口/关键器件的系统级 ESD/Surge 目标并完成方案验证（含带电插拔/瞬变），且设计变更会触发复核？"
+        "en": "Do we define system-level ESD/Surge targets per interface or critical component, validate the solution (including hot-plug/transients), and trigger revalidation whenever the design changes?"
       },
       "rubric": {
         "zh": {
@@ -24,11 +24,11 @@
           "5": "自动化 DRC 与器件库维护，变更触发复核并持续跟踪相关性。"
         },
         "en": {
-          "1": "无 ESD/Surge 设计规范，依赖个人经验处理接口保护。",
-          "2": "有零散 ESD/Surge 经历但缺统一器件 BOM 与记录。",
-          "3": "形成 ESD/Surge 规范并完成关键接口预验证与等级记录。",
-          "4": "器件、布局、预验证闭环稳定，充电口保护与 Latch-up 测试达标。",
-          "5": "自动化 DRC 与器件库维护，变更触发复核并持续跟踪相关性。"
+          "1": "No ESD/Surge design standards; interface protection relies on personal experience.",
+          "2": "Scattered ESD/Surge learnings without a unified component BOM or records.",
+          "3": "ESD/Surge guidelines established with pre-validation and level records for key interfaces.",
+          "4": "Components, layout, and pre-validation form a stable loop; charging port protection and latch-up tests meet targets.",
+          "5": "Automated DRC and component libraries are maintained; changes trigger revalidation with ongoing correlation tracking."
         }
       },
       "meta": {
@@ -56,24 +56,24 @@
         },
         "en": {
           "focus": [
-            "规范：ESD/Surge 设计指南（器件/布局/接地/回流）",
-            "保护：接口 TVS/滤波/共模扼流 BOM（USB-C/SIM/天线/显示/按键）",
-            "预验证：IEC 61000-4-2 目标等级记录；Latch-up/JEDEC 测试",
-            "充电口：OVP/OCP/OTP；带电插拔/EFT 场景"
+            "Standards: ESD/Surge design guidelines (components/layout/grounding/return paths)",
+            "Protection: interface TVS/filter/common-mode choke BOMs (USB-C/SIM/antenna/display/buttons)",
+            "Pre-validation: IEC 61000-4-2 target level records; latch-up/JEDEC tests",
+            "Charging port: OVP/OCP/OTP and hot-plug/EFT scenarios"
           ],
           "ask": [
-            "目标 ESD/Surge 等级是多少？",
-            "关键接口的 TVS BOM 与布局如何验证？",
-            "是否进行带电插拔/EFT/Latch-up 预验证？"
+            "What ESD/Surge levels do we design for?",
+            "How do we validate the TVS BOM and layout for critical interfaces?",
+            "Do we run hot-plug/EFT/latch-up pre-validation?"
           ],
           "evidence": [
-            "器件选型表",
-            "布局截图",
-            "预验证报告"
+            "Component selection table",
+            "Layout snapshots",
+            "Pre-validation report"
           ],
           "threshold": [
-            "接触放电≥8kV，空气放电≥15kV",
-            "异常失效注入通过且无复位"
+            "Contact discharge ≥8 kV, air discharge ≥15 kV",
+            "Fault-injection and abnormal conditions pass with no resets"
           ]
         }
       }
@@ -82,7 +82,7 @@
       "id": "design-3-2-电源完整性与-wcca-worst-case",
       "text": {
         "zh": "关键电源回路是否完成 WCCA/环路稳定性评估（含 Bode/相位裕量/增益裕量/容差叠加），并形成可追溯记录？",
-        "en": "关键电源回路是否完成 WCCA/环路稳定性评估（含 Bode/相位裕量/增益裕量/容差叠加），并形成可追溯记录？"
+        "en": "Have critical power loops completed WCCA/loop stability analysis (Bode, phase/gain margins, tolerance stacks) with traceable records?"
       },
       "rubric": {
         "zh": {
@@ -93,11 +93,11 @@
           "5": "电源模型化并与仿真/实测阈值联动，变更自动触发复核。"
         },
         "en": {
-          "1": "无电源稳定性或 WCCA 分析，依赖样机试错。",
-          "2": "零散测量缺少 Bode 或容差分析，文档不完整。",
-          "3": "具备 Bode 测试并对关键节点进行容差与限值评估。",
-          "4": "完成完整 WCCA 报告并覆盖失效注入与充放电安全验证。",
-          "5": "电源模型化并与仿真/实测阈值联动，变更自动触发复核。"
+          "1": "No power stability or WCCA analysis; rely on prototype trial-and-error.",
+          "2": "Ad-hoc measurements without Bode or tolerance analysis; documentation incomplete.",
+          "3": "Bode testing in place with tolerance and limit evaluation at critical nodes.",
+          "4": "Complete WCCA report covering fault injection and charge/discharge safety verification.",
+          "5": "Power stages are modeled with simulation/measurement thresholds; changes trigger automatic revalidation."
         }
       },
       "meta": {
@@ -126,25 +126,25 @@
         },
         "en": {
           "focus": [
-            "稳定性：环路补偿 Bode（相位/增益裕量）",
-            "时序：上/下电时序波形与限制",
-            "容差：关键电源链路 WCCA/器件偏差/温漂/老化",
-            "安全：充电/放电失效注入（短路/探头脱落/冲击）"
+            "Stability: loop-compensation Bode plots (phase/gain margin)",
+            "Sequencing: power-up/down waveforms and limits",
+            "Tolerance: critical power-chain WCCA, component deviations, temperature drift, aging",
+            "Safety: charge/discharge fault injection (shorts, probe drop, surges)"
           ],
           "ask": [
-            "Bode 实测数据如何？",
-            "WCCA 覆盖哪些回路？",
-            "上/下电时序如何验证？"
+            "What do the measured Bode plots show?",
+            "Which loops are covered by the WCCA?",
+            "How are power-up/down sequences verified?"
           ],
           "evidence": [
-            "电源树",
-            "Bode/时序实测",
-            "WCCA 报告",
-            "失效注入记录"
+            "Power tree",
+            "Measured Bode and sequencing data",
+            "WCCA report",
+            "Fault-injection records"
           ],
           "threshold": [
-            "相位裕量≥45°，增益裕量≥6 dB",
-            "关键轨超限闭环并记录"
+            "Phase margin ≥45°, gain margin ≥6 dB",
+            "Limit breaches on critical rails are closed and documented"
           ]
         }
       }
@@ -153,7 +153,7 @@
       "id": "design-3-3-pdn-si-pi-联合仿真",
       "text": {
         "zh": "是否建立 PDN 目标阻抗并完成 SI/PI 联合仿真与板测相关性校核，对高速/大电流轨有明确去耦与布局约束？",
-        "en": "是否建立 PDN 目标阻抗并完成 SI/PI 联合仿真与板测相关性校核，对高速/大电流轨有明确去耦与布局约束？"
+        "en": "Have we defined PDN target impedance, completed SI/PI co-simulation with board correlation, and set explicit decoupling/layout constraints for high-speed and high-current rails?"
       },
       "rubric": {
         "zh": {
@@ -164,11 +164,11 @@
           "5": "持续监控版本间相关性，PDN 目标与变更复核联动。"
         },
         "en": {
-          "1": "无 PDN 目标阻抗或 SI-PI 仿真，去耦方案凭经验。",
-          "2": "仅经验摆放电容，缺少量化指标或仿真记录。",
-          "3": "制定 PDN 目标并开展仿真与眼图分析。",
-          "4": "仿真与板上测量一致，去耦与眼图报告形成闭环。",
-          "5": "持续监控版本间相关性，PDN 目标与变更复核联动。"
+          "1": "No PDN target impedance or SI/PI simulation; decoupling is experience-based.",
+          "2": "Capacitors placed by experience with no quantified metrics or simulation records.",
+          "3": "PDN targets are defined with simulations and eye diagram analysis.",
+          "4": "Simulation aligns with board measurements; decoupling and eye diagram reports close the loop.",
+          "5": "Correlation across versions is monitored; PDN targets link with change rechecks."
         }
       },
       "meta": {
@@ -198,26 +198,26 @@
         },
         "en": {
           "focus": [
-            "目标：PDN 目标阻抗（频域/时域）",
-            "去耦：电容网络方案与布局回路",
-            "高速：MIPI/USB/DDR 眼图/BER 报告",
-            "一致性：仿真 vs 板上测量对比"
+            "Targets: PDN impedance goals (frequency/time domain)",
+            "Decoupling: capacitor network strategy and layout loops",
+            "High-speed: MIPI/USB/DDR eye diagram and BER reports",
+            "Correlation: simulation versus board measurements"
           ],
           "ask": [
-            "Ztarget 如何定义与验证？",
-            "仿真与板测差异如何评估？",
-            "DFMEA 高风险如何触发专项仿真？",
-            "模型如何校准与版本化？"
+            "How is Ztarget defined and verified?",
+            "How do we assess differences between simulation and board measurements?",
+            "How do DFMEA high-risk items trigger dedicated simulations?",
+            "How are models calibrated and versioned?"
           ],
           "evidence": [
-            "PDN 仿真/测量",
-            "眼图",
-            "去耦清单"
+            "PDN simulations and measurements",
+            "Eye diagrams",
+            "Decoupling bill of materials"
           ],
           "threshold": [
-            "关键频段阻抗满足目标并留余量",
-            "高速接口通过协议限值",
-            "高风险项均建立仿真验证闭环"
+            "Impedance meets targets with margin at critical bands",
+            "High-speed interfaces meet protocol limits",
+            "High-risk items all have simulation and verification closure"
           ]
         }
       }
@@ -226,7 +226,7 @@
       "id": "design-3-4-结构应力-冲击-密封-fea-ip",
       "text": {
         "zh": "是否完成结构 FEA 与关键工况（跌落/扭转/挤压/密封压缩量等）验证，并与型式试验（如 IP 等级）一致？",
-        "en": "是否完成结构 FEA 与关键工况（跌落/扭转/挤压/密封压缩量等）验证，并与型式试验（如 IP 等级）一致？"
+        "en": "Have we completed structural FEA and key-condition validation (drop/twist/compression/seal squeeze) and aligned with type tests such as IP ratings?"
       },
       "rubric": {
         "zh": {
@@ -237,11 +237,11 @@
           "5": "建立参数库与公差链分析，结构/密封变更自动触发复核。"
         },
         "en": {
-          "1": "仅做零散结构实测，无 CAE 或标准支撑。",
-          "2": "尚未建立系统 CAE 模型，评估多依赖经验。",
-          "3": "能执行 CAE 或实测其一，覆盖主要跌落/扭转/IP 场景。",
-          "4": "CAE 与实测互相校验，IP 型式与耐蚀测试达到目标。",
-          "5": "建立参数库与公差链分析，结构/密封变更自动触发复核。"
+          "1": "Only ad-hoc structural tests with no CAE or standards support.",
+          "2": "Systematic CAE models not yet established; evaluations rely on experience.",
+          "3": "Either CAE or physical testing is in place covering major drop/torsion/IP scenarios.",
+          "4": "CAE correlates with physical tests; IP certification and corrosion tests meet targets.",
+          "5": "Parameter libraries and tolerance-chain analysis exist; structural/seal changes auto-trigger reviews."
         }
       },
       "meta": {
@@ -268,23 +268,23 @@
         },
         "en": {
           "focus": [
-            "FEA：跌落/扭转/点载 CAE 与实测闭环",
-            "连接：螺钉/卡扣/胶粘结构强度与疲劳",
-            "IP：密封胶圈压缩量、公差链；透气件布置",
-            "耐蚀：汗液/盐雾风险点"
+            "FEA: drop/torsion/point-load CAE with test correlation",
+            "Connections: screw/clip/adhesive strength and fatigue",
+            "IP: seal compression, tolerance chain, and vent placement",
+            "Corrosion: sweat/salt-spray risk points"
           ],
           "ask": [
-            "CAE 如何与实测比对？",
-            "密封公差链如何计算？"
+            "How do CAE results correlate with physical tests?",
+            "How is the sealing tolerance stack calculated?"
           ],
           "evidence": [
-            "CAE 模型/校核",
-            "跌落&扭转实测",
-            "IP 型式测试"
+            "CAE models and correlation",
+            "Drop and torsion test data",
+            "IP certification results"
           ],
           "threshold": [
-            "1.5m 六面多次功能正常",
-            "IP 目标与耐蚀要求达成"
+            "1.5 m six-face drops multiple times with functional pass",
+            "IP targets and corrosion requirements achieved"
           ]
         }
       }
@@ -293,7 +293,7 @@
       "id": "design-3-5-热设计与电-热协同-cfd",
       "text": {
         "zh": "是否进行稳态与瞬态热仿真并与实测对比，明确节流/降额策略与结温/触感控制目标？",
-        "en": "是否进行稳态与瞬态热仿真并与实测对比，明确节流/降额策略与结温/触感控制目标？"
+        "en": "Do we run steady-state and transient thermal simulations, compare against measurements, and define throttling/derating strategies plus junction/touch temperature targets?"
       },
       "rubric": {
         "zh": {
@@ -304,11 +304,11 @@
           "5": "电热耦合模型与寿命评估联动，热点监控与策略自动更新。"
         },
         "en": {
-          "1": "无热设计仿真或节流策略，依靠经验排布。",
-          "2": "仅有稳态仿真或零散测温，缺少校准基准。",
-          "3": "完成稳态仿真并进行关键点测温校核。",
-          "4": "稳态与瞬态 CFD 与实测偏差受控，节流与降额策略闭环。",
-          "5": "电热耦合模型与寿命评估联动，热点监控与策略自动更新。"
+          "1": "No thermal simulations or throttling strategy; rely on experience.",
+          "2": "Only steady-state sims or scattered temperature checks without calibration.",
+          "3": "Steady-state simulations completed with key-point temperature correlation.",
+          "4": "Steady and transient CFD align with measurements; throttling and derating strategies are closed.",
+          "5": "Electro-thermal models connect to life assessment; hotspot monitoring updates strategies automatically."
         }
       },
       "meta": {
@@ -336,24 +336,24 @@
         },
         "en": {
           "focus": [
-            "工况：拍摄/5G/游戏/充电 场景功耗",
-            "仿真：稳态+瞬态 CFD；测温点对比",
-            "方案：石墨片/VC/TIM；节流策略曲线",
-            "降额：热致降额与寿命"
+            "Scenarios: power profiles for camera/5G/gaming/charging",
+            "Simulation: steady and transient CFD with measurement alignment",
+            "Solutions: graphite/VC/TIM; throttling curves",
+            "Derating: thermal derating and lifetime"
           ],
           "ask": [
-            "仿真实测偏差控制在多少？",
-            "节流策略触发点如何设定？"
+            "What deviation is maintained between simulation and measurement?",
+            "How are throttling triggers defined?"
           ],
           "evidence": [
-            "CFD 报告",
-            "测温表",
-            "节流策略"
+            "CFD report",
+            "Temperature measurement log",
+            "Throttling strategy"
           ],
           "threshold": [
-            "触感温度满足目标",
-            "结温低于器件上限",
-            "充电热稳定验证通过"
+            "Surface touch temperature meets targets",
+            "Junction temperature stays below component limits",
+            "Charging thermal stability verification passed"
           ]
         }
       }
@@ -362,7 +362,7 @@
       "id": "design-3-6-射频-天线仿真与-ota-预算",
       "text": {
         "zh": "是否建立射频/天线性能/TRP/TIS 预算并完成 EM 仿真与 OTA 实测相关性校核，且结构变更具备复核机制？",
-        "en": "是否建立射频/天线性能/TRP/TIS 预算并完成 EM 仿真与 OTA 实测相关性校核，且结构变更具备复核机制？"
+        "en": "Have we built RF/antenna performance and TRP/TIS budgets, correlated EM simulations with OTA measurements, and established rechecks for structural changes?"
       },
       "rubric": {
         "zh": {
@@ -373,11 +373,11 @@
           "5": "建立余量预算与变更触发机制，持续监控 MIMO/SAR 数据闭环。"
         },
         "en": {
-          "1": "仅关注 S11 等基础匹配，无 OTA 预算或仿真。",
-          "2": "零散开展 3D EM 或 OTA 其中一项，缺系统预算。",
-          "3": "具备 3D EM 仿真或 OTA 测试，并对效率/匹配进行评估。",
-          "4": "EM 与 OTA 数据一致性可证明，余量与结构变更有复核。",
-          "5": "建立余量预算与变更触发机制，持续监控 MIMO/SAR 数据闭环。"
+          "1": "Only basic S11 matching considered; no OTA budgets or simulations.",
+          "2": "Occasional 3D EM or OTA work without a systematic budget.",
+          "3": "3D EM simulation or OTA testing exists with efficiency and matching evaluation.",
+          "4": "EM and OTA data correlation is proven; margins and structural changes are rechecked.",
+          "5": "Margin budgets and change triggers are in place with continuous MIMO/SAR monitoring and closure."
         }
       },
       "meta": {
@@ -406,25 +406,25 @@
         },
         "en": {
           "focus": [
-            "EM：3D 天线/整机仿真（FEM/FDTD）",
-            "余量：效率/带宽/匹配容差；MIMO 相关性",
-            "影响：结构件/屏蔽/地弹片变更复核",
-            "合规：SAR 初评"
+            "EM: 3D antenna/system simulations (FEM/FDTD)",
+            "Margins: efficiency/bandwidth/matching tolerance; MIMO correlation",
+            "Impact: structural components/shielding/spring-finger change revalidations",
+            "Compliance: preliminary SAR evaluation"
           ],
           "ask": [
-            "仿真与 OTA 数据如何对齐？",
-            "多姿态 OTA 结果是否满足？",
-            "DFMEA 高风险如何触发专项仿真？",
-            "模型如何校准与版本化？"
+            "How do simulation and OTA data align?",
+            "Do multi-position OTA results meet expectations?",
+            "How do DFMEA high-risk items trigger dedicated simulations?",
+            "How are models calibrated and versioned?"
           ],
           "evidence": [
-            "EM 仿真",
-            "VNA/OTA 实测",
-            "变更评估单"
+            "EM simulations",
+            "VNA/OTA measurements",
+            "Change evaluation record"
           ],
           "threshold": [
-            "关键频段余量满足预算并留裕量",
-            "高风险项均建立仿真验证闭环"
+            "Critical band margins meet budget with headroom",
+            "High-risk items all have simulation and verification closure"
           ]
         }
       }
@@ -433,7 +433,7 @@
       "id": "design-3-7-条件触发的必要仿真-按-dfmea-高风险触发",
       "text": {
         "zh": "是否基于 DFMEA/风险评估定义条件触发的专项验证（如耐腐蚀/化学品/高低温循环等），并将其纳入设计 Entry/Exit？",
-        "en": "是否基于 DFMEA/风险评估定义条件触发的专项验证（如耐腐蚀/化学品/高低温循环等），并将其纳入设计 Entry/Exit？"
+        "en": "Have we defined DFMEA/risk-triggered special verifications (corrosion, chemicals, thermal cycling, etc.) and wired them into design Entry/Exit gates?"
       },
       "rubric": {
         "zh": {
@@ -444,11 +444,11 @@
           "5": "仿真模型与参数库维护完备，与变更/风险阈值联动自动复核。"
         },
         "en": {
-          "1": "无条件触发仿真策略，DFMEA 高风险未覆盖。",
-          "2": "仅零散执行个别专项仿真，缺触发标准与记录。",
-          "3": "依据 DFMEA 触发主要专项仿真，但闭环与验证不完全。",
-          "4": "触发条件、仿真与验证闭环形成台账，可追溯至项目风险。",
-          "5": "仿真模型与参数库维护完备，与变更/风险阈值联动自动复核。"
+          "1": "No conditional simulation strategy; DFMEA high risks remain uncovered.",
+          "2": "Only occasional special simulations without trigger criteria or records.",
+          "3": "DFMEA triggers major special simulations, but closure and verification are incomplete.",
+          "4": "Trigger conditions, simulations, and verification closure are logged and traceable to project risks.",
+          "5": "Simulation models and parameter libraries are maintained with automatic rechecks tied to change/risk thresholds."
         }
       },
       "meta": {
@@ -479,27 +479,27 @@
         },
         "en": {
           "focus": [
-            "公差链 Monte-Carlo（贴合/光轴/密封/卡扣）",
-            "相机专项（MTF/SFR、OIS/AF 寿命）",
-            "声学/振动（腔体、Mic、NVH）",
-            "EMC 预分析（谐振/屏蔽/滤波）",
-            "电池模型（循环寿命、极耳温升热点）"
+            "Tolerance-chain Monte Carlo (assembly/alignment/sealing/clips)",
+            "Camera-specific checks (MTF/SFR, OIS/AF life)",
+            "Acoustics/vibration (cavity, mic, NVH)",
+            "EMC pre-analysis (resonance/shielding/filtering)",
+            "Battery models (cycle life, tab hotspot rise)"
           ],
           "ask": [
-            "评审参与角色有哪些？",
-            "整改闭环如何追踪？",
-            "DFMEA 高风险如何触发专项仿真？",
-            "模型如何校准与版本化？"
+            "Who participates in the reviews?",
+            "How is corrective closure tracked?",
+            "How do DFMEA high-risk items trigger dedicated simulations?",
+            "How are models calibrated and versioned?"
           ],
           "evidence": [
-            "DFM/DFA 评审纪要",
-            "整改清单与验证记录",
-            "专项仿真报告与模型文件",
-            "验证对比记录"
+            "DFM/DFA review minutes",
+            "Corrective action list and validation records",
+            "Special simulation reports and model files",
+            "Verification comparison records"
           ],
           "threshold": [
-            "关键可制造风险闭环并有复盘",
-            "高风险项均建立仿真验证闭环"
+            "Critical manufacturability risks are closed with retrospectives",
+            "High-risk items all have simulation and verification closure"
           ]
         }
       }
