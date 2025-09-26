@@ -12,18 +12,37 @@
   .grid{display:grid;gap:18px}
   .card{border:1px solid #e5e7eb;border-radius:12px;padding:16px}
   table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{border-top:1px solid #eee;padding:10px;vertical-align:top}
-  th{background:#fafafa;text-align:left}
+  th,td{border-top:1px solid #eee;padding:10px;vertical-align:top;white-space:normal;word-break:break-word}
+  .qtext div{white-space:pre-wrap;word-break:break-word}
+  th{background:#fafafa;text-align:left;position:relative}
+  th.resizable{padding-right:16px}
+  .col-resizer{position:absolute;top:0;right:-3px;width:6px;height:100%;cursor:col-resize;user-select:none}
+  .col-resizer::after{content:"";position:absolute;top:0;bottom:0;left:50%;width:1px;background:#d1d5db;transform:translateX(-50%);opacity:0;transition:opacity .15s ease}
+  th.resizable:hover .col-resizer::after,.col-resizer.is-active::after{opacity:1}
+  table.resizing,body.is-resizing{cursor:col-resize!important}
+  table.resizing th,table.resizing td{user-select:none}
   .mod-head{display:flex;justify-content:space-between;align-items:center}
+  .mod-head .left{display:flex;align-items:center;gap:8px}
+  .weight-control{display:flex;align-items:center;gap:4px;font-size:12px;color:#555}
+  .weight-control input{width:64px;padding:4px 6px;border:1px solid #d1d5db;border-radius:6px;font:inherit;text-align:right}
+  .weight-control input:focus{outline:2px solid #93c5fd;outline-offset:1px}
   .badge{background:#eef6ff;color:#0366d6;border:1px solid #cfe3ff;padding:2px 8px;border-radius:999px;font-size:12px}
   .pill{padding:2px 8px;border-radius:8px;background:#f6f6f6;border:1px solid #eaeaea;font-size:12px;color:#444}
   select.scorebox{min-width:280px}
-  .notes{width:100%}
+  select.scorebox option{white-space:normal;word-break:break-word}
+  .notes{width:100%;min-height:64px;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font:inherit;line-height:1.4;resize:vertical;box-sizing:border-box}
   .footer{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  .legend{font-size:12px;color:#555}
+  .legend{font-size:12px;color:#555;white-space:normal;line-height:1.4}
+  .legend.notes{display:block}
   .muted{color:#777}
   .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
   .kpi > div{background:#fafafa;border:1px solid #eee;border-radius:10px;padding:10px;text-align:center}
+  .radar-container{max-width:660px;width:100%;margin:12px auto}
+  .radar-container canvas{display:block;width:100%;height:auto}
+  .weight-alert{margin-top:8px;font-size:13px;color:#555}
+  .weight-alert.error{color:#b91c1c}
+  .weight-alert.warn{color:#b45309}
+  .weight-alert.ok{color:#0a7a34}
   .ok{color:#0a7a34}
   .warn{color:#b45309}
   .risk{color:#b91c1c}
@@ -56,8 +75,11 @@
   <div class="card">
     <h2 id="summaryTitle"></h2>
     <div class="kpi" id="kpi"></div>
-    <canvas id="radar" height="180"></canvas>
+    <div class="radar-container">
+      <canvas id="radar" height="180"></canvas>
+    </div>
     <p class="muted" id="summaryTip"></p>
+    <p class="weight-alert" id="weightAlert"></p>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1"></script>
@@ -65,12 +87,15 @@
 const MODULE_KEYS = ["org","process","design","verify","scm","change","risk","perf"];
 const DATA_DIR = "./data";
 const moduleAverages = new Map();
+const moduleWeights = new Map();
 let MODEL = [];
 let radar = null;
 let UI_I18N = {};
 window.UI_I18N = UI_I18N;
 const LANGS = ["zh","en"];
 const DRAFT_KEY = "audit.draft.v1";
+const MIN_COLUMN_WIDTHS = { 1: 200, 2: 100, 3: 220 };
+const DEFAULT_COLUMN_WIDTHS = { 0: 44, 1: 300, 2: 120, 3: 260 };
 const RUBRIC_FALLBACK = {
   zh: {
     "1": "无系统",
@@ -88,6 +113,7 @@ const RUBRIC_FALLBACK = {
   }
 };
 let HOVER_EVENTS_BOUND = false;
+let ACTIVE_COLUMN_RESIZE = null;
 
 function escapeHtml(str) {
   const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
@@ -222,6 +248,119 @@ function tMeta(question){
   return { focus: [], ask: [], evidence: [], threshold: [] };
 }
 
+function defaultWeightValue(){
+  const count = MODEL.length || MODULE_KEYS.length || 1;
+  return Number((100 / count).toFixed(2));
+}
+
+function normalizeWeight(value){
+  if(typeof value === "string"){
+    const cleaned = value.replace(/%/g, "");
+    const parsed = Number(cleaned);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  if(typeof value === "number"){
+    return Number.isFinite(value) ? value : null;
+  }
+  return null;
+}
+
+function getModuleWeight(moduleKey){
+  if(!moduleWeights.has(moduleKey)){
+    moduleWeights.set(moduleKey, defaultWeightValue());
+  }
+  return Number(moduleWeights.get(moduleKey) ?? 0);
+}
+
+function setModuleWeight(moduleKey, value){
+  const normalized = normalizeWeight(value);
+  const clamped = normalized == null ? defaultWeightValue() : Math.max(0, Math.min(100, normalized));
+  moduleWeights.set(moduleKey, clamped);
+  return clamped;
+}
+
+function tWeightLabel(){
+  return window.CUR_LANG === "en" ? "Weight (%)" : "权重（%）";
+}
+
+function formatWeight(value){
+  const num = Number(value);
+  if(Number.isFinite(num)){
+    return num.toFixed(2);
+  }
+  return defaultWeightValue().toFixed(2);
+}
+
+function formatWeightDisplay(value){
+  const num = Number(value);
+  if(!Number.isFinite(num)) return "0%";
+  const fixed = num.toFixed(2);
+  const trimmed = fixed.replace(/\.00$/, "").replace(/0$/, "");
+  return `${trimmed}%`;
+}
+
+function updateWeightInputs(){
+  document.querySelectorAll(".module-weight").forEach(input => {
+    const weight = getModuleWeight(input.dataset.module);
+    input.value = formatWeight(weight);
+  });
+}
+
+function saveWeightsDraft(){
+  const draft = readDraft();
+  draft.lang = window.CUR_LANG || "zh";
+  draft.weights = {};
+  moduleWeights.forEach((value, key) => {
+    draft.weights[key] = Number(formatWeight(value));
+  });
+  draft.modules = draft.modules || {};
+  writeDraft(draft);
+}
+
+function handleWeightInput(event){
+  const input = event.currentTarget;
+  if(!input) return;
+  const moduleKey = input.dataset.module;
+  if(!moduleKey) return;
+  const previous = getModuleWeight(moduleKey);
+  const normalized = normalizeWeight(input.value);
+  const clamped = normalized == null ? previous : Math.max(0, Math.min(100, normalized));
+  setModuleWeight(moduleKey, clamped);
+  if(event.type === "change" || event.type === "blur"){
+    input.value = formatWeight(clamped);
+  }
+  saveWeightsDraft();
+  recalc();
+}
+
+function updateWeightAlert(totalWeight){
+  const alert = document.getElementById("weightAlert");
+  if(!alert){
+    return;
+  }
+  alert.textContent = "";
+  alert.className = "weight-alert";
+  if(!Number.isFinite(totalWeight)){
+    return;
+  }
+  const lang = window.CUR_LANG === "en" ? "en" : "zh";
+  const formatted = formatWeightDisplay(totalWeight);
+  if(Math.abs(totalWeight - 100) <= 0.01){
+    alert.classList.add("ok");
+    alert.textContent = lang === "en" ? "Weights total 100%." : "权重合计为 100%。";
+    return;
+  }
+  const isOver = totalWeight > 100;
+  alert.classList.add(isOver ? "error" : "warn");
+  alert.textContent = lang === "en"
+    ? (isOver
+        ? `Module weights exceed 100% (current ${formatted}). Please adjust.`
+        : `Module weights total ${formatted}. Please adjust to reach 100%.`)
+    : (isOver
+        ? `模块权重合计超过 100%（当前 ${formatted}）。请调整。`
+        : `模块权重合计为 ${formatted}，请调整至 100%。`);
+}
+
 function readDraft(){
   try{
     const raw = localStorage.getItem(DRAFT_KEY);
@@ -255,10 +394,17 @@ function saveField(modKey, qId, field, value){
   writeDraft(draft);
 }
 function applyDraft(draft){
-  if(!draft || !draft.modules) return;
+  if(!draft) return;
+  if(draft.weights && typeof draft.weights === "object"){
+    Object.entries(draft.weights).forEach(([modKey, weight]) => {
+      setModuleWeight(modKey, Number(weight));
+    });
+  }
+  updateWeightInputs();
+  if(!draft.modules) return;
   Object.entries(draft.modules).forEach(([modKey, questions]) => {
     const selects = Array.from(document.querySelectorAll(`select.scorebox[data-module="${modKey}"]`));
-    const notes = Array.from(document.querySelectorAll(`input.notes[data-module="${modKey}"]`));
+    const notes = Array.from(document.querySelectorAll(`.notes[data-module="${modKey}"]`));
     Object.entries(questions || {}).forEach(([qid, rec]) => {
       if(rec && typeof rec === "object"){
         if(rec.score !== null && rec.score !== undefined && rec.score !== ""){
@@ -447,18 +593,29 @@ function renderModules(modules){
         <td class="score-cell">
           ${renderScorebox(module.key, idx)}
         </td>
-        <td><input class="notes" data-module="${module.key}" data-index="${idx}" data-qid="${escapeAttr(q.id)}" placeholder="${notePlaceholder}"></td>
+        <td><textarea class="notes" data-module="${module.key}" data-index="${idx}" data-qid="${escapeAttr(q.id)}" placeholder="${notePlaceholder}"></textarea></td>
       </tr>
     `).join("");
     const intentText = tIntent(module);
     const intent = intentText ? `<span class="badge" title="${escapeHtml(intentText)}">${escapeHtml(tUI("badge.intent"))}${escapeHtml(intentText)}</span>` : "";
+    const weightLabel = escapeHtml(tWeightLabel());
+    const weightValue = escapeAttr(getModuleWeight(module.key).toFixed(2));
+    const weightControl = `
+      <label class="weight-control">
+        <span>${weightLabel}</span>
+        <input class="module-weight" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="${weightValue}" data-module="${module.key}" aria-label="${weightLabel}">
+      </label>
+    `;
     return `
       <div class="card module">
         <div class="mod-head">
-          <h2>${escapeHtml(tName(module))}</h2>
+          <div class="left">
+            <h2>${escapeHtml(tName(module))}</h2>
+            ${weightControl}
+          </div>
           ${intent}
         </div>
-        <table>
+        <table class="resizable-table">
           <thead><tr><th style="width:44px">#</th><th>${escapeHtml(tUI("questions"))}</th><th style="width:110px">${escapeHtml(tUI("score"))}</th><th>${escapeHtml(tUI("notes"))}</th></tr></thead>
           <tbody>${questions}</tbody>
         </table>
@@ -477,11 +634,117 @@ function renderModules(modules){
       recalc();
     });
   });
-  host.querySelectorAll("input.notes").forEach(input => {
+  host.querySelectorAll(".notes").forEach(input => {
     input.addEventListener("input", () => {
       saveField(input.dataset.module, input.dataset.qid, "note", input.value);
     });
   });
+  host.querySelectorAll(".module-weight").forEach(input => {
+    input.addEventListener("input", handleWeightInput);
+    input.addEventListener("change", handleWeightInput);
+    input.addEventListener("blur", handleWeightInput);
+  });
+  host.querySelectorAll("table.resizable-table").forEach(attachTableResizers);
+}
+
+function attachTableResizers(table){
+  if(!table || table.dataset.resizableInit === "true") return;
+  const headerRow = table.querySelector("thead tr");
+  if(!headerRow) return;
+  const headers = Array.from(headerRow.children);
+  if(headers.length === 0) return;
+  const widths = headers.map(header => header.getBoundingClientRect().width);
+  table.style.tableLayout = "fixed";
+  headers.forEach((th, idx) => {
+    const defaultWidth = DEFAULT_COLUMN_WIDTHS[idx];
+    const minWidthFallback = Math.max(Math.round(widths[idx]), 60);
+    const minWidth = MIN_COLUMN_WIDTHS[idx] || minWidthFallback;
+    const preferredWidth = Math.max(minWidth, defaultWidth || Math.round(widths[idx] * 0.85));
+    th.style.minWidth = `${minWidth}px`;
+    th.style.width = `${preferredWidth}px`;
+    if(idx === 0) return;
+    th.classList.add("resizable");
+    const resizer = document.createElement("span");
+    resizer.className = "col-resizer";
+    resizer.dataset.index = String(idx);
+    resizer.addEventListener("mousedown", startColumnResize);
+    th.appendChild(resizer);
+  });
+  syncTableColumnWidths(table);
+  table.dataset.resizableInit = "true";
+}
+
+function syncTableColumnWidths(table){
+  const headerCells = Array.from(table.querySelectorAll("thead th"));
+  if(headerCells.length === 0) return;
+  const bodyRows = Array.from(table.querySelectorAll("tbody tr"));
+  bodyRows.forEach(row => {
+    headerCells.forEach((th, idx) => {
+      const cell = row.children[idx];
+      if(!cell) return;
+      const width = parseFloat(th.style.width) || th.getBoundingClientRect().width;
+      const minWidth = parseFloat(th.style.minWidth) || width;
+      cell.style.width = `${width}px`;
+      cell.style.minWidth = `${minWidth}px`;
+    });
+  });
+}
+
+function startColumnResize(event){
+  event.preventDefault();
+  const resizer = event.currentTarget;
+  const th = resizer.parentElement;
+  const table = th ? th.closest("table") : null;
+  if(!table) return;
+  const index = Number(resizer.dataset.index);
+  const headerCells = Array.from(table.querySelectorAll("thead th"));
+  const startWidth = headerCells[index] ? headerCells[index].getBoundingClientRect().width : 0;
+  ACTIVE_COLUMN_RESIZE = {
+    table,
+    headerCells,
+    index,
+    startWidth,
+    startX: event.clientX,
+    resizer
+  };
+  table.classList.add("resizing");
+  resizer.classList.add("is-active");
+  document.body.classList.add("is-resizing");
+  document.body.style.userSelect = "none";
+  document.addEventListener("mousemove", handleColumnResize);
+  document.addEventListener("mouseup", stopColumnResize);
+}
+
+function handleColumnResize(event){
+  if(!ACTIVE_COLUMN_RESIZE) return;
+  const { table, headerCells, index, startWidth, startX } = ACTIVE_COLUMN_RESIZE;
+  const header = headerCells[index];
+  if(!header) return;
+  const delta = event.clientX - startX;
+  const minWidth = MIN_COLUMN_WIDTHS[index] || parseFloat(header.style.minWidth) || 60;
+  const newWidth = Math.max(minWidth, startWidth + delta);
+  header.style.width = `${newWidth}px`;
+  const rows = table.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    const cell = row.children[index];
+    if(cell){
+      cell.style.width = `${newWidth}px`;
+      cell.style.minWidth = `${minWidth}px`;
+    }
+  });
+}
+
+function stopColumnResize(){
+  if(!ACTIVE_COLUMN_RESIZE) return;
+  document.removeEventListener("mousemove", handleColumnResize);
+  document.removeEventListener("mouseup", stopColumnResize);
+  const { table, resizer } = ACTIVE_COLUMN_RESIZE;
+  if(table) table.classList.remove("resizing");
+  if(resizer) resizer.classList.remove("is-active");
+  document.body.classList.remove("is-resizing");
+  document.body.style.removeProperty("user-select");
+  if(table) syncTableColumnWidths(table);
+  ACTIVE_COLUMN_RESIZE = null;
 }
 
 function applyUIStrings(){
@@ -528,6 +791,9 @@ function recalc(){
   if(!Array.isArray(MODEL) || !MODEL.length) return;
   moduleAverages.clear();
   const averages = [];
+  let totalWeight = 0;
+  let weightedSum = 0;
+  let appliedWeight = 0;
   MODEL.forEach((module, idx) => {
     const selects = Array.from(document.querySelectorAll(`select.scorebox[data-module="${module.key}"]`));
     const scores = selects.map(sel => Number(sel.value)).filter(v => !Number.isNaN(v) && v > 0);
@@ -537,27 +803,46 @@ function recalc(){
     if(avgEl){
       avgEl.textContent = Number.isFinite(avg) ? avg.toFixed(2) : "—";
     }
-    averages[idx] = Number.isFinite(avg) ? Number(avg.toFixed(2)) : NaN;
+    const normalizedAvg = Number.isFinite(avg) ? Number(avg.toFixed(2)) : NaN;
+    const weight = getModuleWeight(module.key);
+    totalWeight += weight;
+    if(Number.isFinite(normalizedAvg)){
+      weightedSum += normalizedAvg * weight;
+      appliedWeight += weight;
+    }
+    averages[idx] = normalizedAvg;
   });
   if(radar){
     radar.data.datasets[0].data = averages.map(v => Number.isFinite(v) ? v : 0);
     radar.update();
   }
-  const valid = averages.filter(v => Number.isFinite(v) && v > 0);
-  const overall = valid.length ? valid.reduce((sum, v) => sum + v, 0) / valid.length : NaN;
-  kpiBox.innerHTML =
-    kpiCell(tUI("kpi.overall"), overall) +
-    MODEL.map((module, idx) => {
-      const label = tName(module).replace(/^\d+\.\s*/, "") || module.key;
-      return kpiCell(label, averages[idx]);
-    }).join("");
+  const overall = appliedWeight > 0 ? weightedSum / appliedWeight : NaN;
+  updateWeightAlert(totalWeight);
+  if(kpiBox){
+    kpiBox.innerHTML =
+      kpiCell(tUI("kpi.overall"), overall) +
+      MODEL.map((module, idx) => {
+        const label = tName(module).replace(/^\d+\.\s*/, "") || module.key;
+        const weightLabel = `${label} (${formatWeightDisplay(getModuleWeight(module.key))})`;
+        return kpiCell(weightLabel, averages[idx]);
+      }).join("");
+  }
 }
 
 function resetScores(){
   document.querySelectorAll("select.scorebox").forEach(sel => sel.value = "");
-  document.querySelectorAll("input.notes").forEach(input => input.value = "");
+  document.querySelectorAll(".notes").forEach(input => input.value = "");
   moduleAverages.clear();
-  writeDraft({ lang: window.CUR_LANG || "zh" });
+  const lang = window.CUR_LANG || "zh";
+  moduleWeights.clear();
+  const defaults = MODEL.length ? Number((100 / MODEL.length).toFixed(2)) : 0;
+  const weightsDraft = {};
+  MODEL.forEach(module => {
+    const weight = setModuleWeight(module.key, defaults);
+    weightsDraft[module.key] = Number(formatWeight(weight));
+  });
+  updateWeightInputs();
+  writeDraft({ lang, modules: {}, weights: weightsDraft });
   recalc();
 }
 
@@ -594,10 +879,19 @@ function exportJSON(){
       name_all: module.name,
       version: module.version || null,
       intent: module.intent || null,
+      weight: Number(formatWeight(getModuleWeight(module.key))),
       avg: calcAvgForModule(module.key),
       rows
     });
   });
+  const weightsExport = {};
+  moduleWeights.forEach((value, key) => {
+    weightsExport[key] = Number(formatWeight(value));
+  });
+  output.weightSummary = {
+    total: Number(formatWeight(Array.from(moduleWeights.values()).reduce((sum, v) => sum + Number(v || 0), 0))),
+    weights: weightsExport
+  };
   const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
@@ -648,6 +942,11 @@ async function loadModules(){
   }
   MODEL = modules;
   window.MODEL = MODEL;
+  moduleWeights.clear();
+  const defaultWeight = modules.length ? Number((100 / modules.length).toFixed(2)) : 0;
+  modules.forEach(module => {
+    moduleWeights.set(module.key, defaultWeight);
+  });
   return modules;
 }
 
@@ -670,6 +969,8 @@ function initRadar(modules){
     },
     options: {
       responsive: true,
+      maintainAspectRatio: true,
+      aspectRatio: 1,
       scales: { r: { min: 0, max: 5, ticks: { stepSize: 1 } } },
       plugins: { legend: { display: false } }
     }

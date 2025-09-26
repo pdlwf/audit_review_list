@@ -1,0 +1,30 @@
+version: 1
+include:
+  - "basic_knowledge/**/*.py"
+  - "basic_knowledge/**/*.ts"
+  - "basic_knowledge/**/*.tsx"
+  - "src/**"
+  - "app/**"
+  - "packages/**"
+  - "data/**"
+exclude:
+  - "**/dist/**"
+  - "**/.venv/**"
+  - "**/node_modules/**"
+  - "**/__pycache__/**"
+  - "**/*.min.*"
+features:
+  parsePython: true
+  parseJSTS: true
+  parseConfig: true
+  gitHotspot: true
+aliases:
+  pythonPackageRoots: []
+  tsconfigPaths: []
+rules:
+  load:
+    - "rules/web_routing.yaml"
+    - "rules/api_contract.yaml"
+impact:
+  defaultDepth: 2
+  includeTestsByDefault: false

@@ -78,77 +78,7 @@
         }
       }
     },
-    {
-      "id": "design-3-2-电源完整性与-wcca-worst-case",
-      "text": {
-        "zh": "关键电源回路是否完成 WCCA/环路稳定性评估（含 Bode/相位裕量/增益裕量/容差叠加），并形成可追溯记录？",
-        "en": "Have critical power loops completed WCCA/loop stability analysis (Bode, phase/gain margins, tolerance stacks) with traceable records?"
-      },
-      "rubric": {
-        "zh": {
-          "1": "无电源稳定性或 WCCA 分析，依赖样机试错。",
-          "2": "零散测量缺少 Bode 或容差分析，文档不完整。",
-          "3": "具备 Bode 测试并对关键节点进行容差与限值评估。",
-          "4": "完成完整 WCCA 报告并覆盖失效注入与充放电安全验证。",
-          "5": "电源模型化并与仿真/实测阈值联动，变更自动触发复核。"
-        },
-        "en": {
-          "1": "No power stability or WCCA analysis; rely on prototype trial-and-error.",
-          "2": "Ad-hoc measurements without Bode or tolerance analysis; documentation incomplete.",
-          "3": "Bode testing in place with tolerance and limit evaluation at critical nodes.",
-          "4": "Complete WCCA report covering fault injection and charge/discharge safety verification.",
-          "5": "Power stages are modeled with simulation/measurement thresholds; changes trigger automatic revalidation."
-        }
-      },
-      "meta": {
-        "zh": {
-          "focus": [
-            "稳定性：环路补偿 Bode（相位/增益裕量）",
-            "时序：上/下电时序波形与限制",
-            "容差：关键电源链路 WCCA/器件偏差/温漂/老化",
-            "安全：充电/放电失效注入（短路/探头脱落/冲击）"
-          ],
-          "ask": [
-            "Bode 实测数据如何？",
-            "WCCA 覆盖哪些回路？",
-            "上/下电时序如何验证？"
-          ],
-          "evidence": [
-            "电源树",
-            "Bode/时序实测",
-            "WCCA 报告",
-            "失效注入记录"
-          ],
-          "threshold": [
-            "相位裕量≥45°，增益裕量≥6 dB",
-            "关键轨超限闭环并记录"
-          ]
-        },
-        "en": {
-          "focus": [
-            "Stability: loop-compensation Bode plots (phase/gain margin)",
-            "Sequencing: power-up/down waveforms and limits",
-            "Tolerance: critical power-chain WCCA, component deviations, temperature drift, aging",
-            "Safety: charge/discharge fault injection (shorts, probe drop, surges)"
-          ],
-          "ask": [
-            "What do the measured Bode plots show?",
-            "Which loops are covered by the WCCA?",
-            "How are power-up/down sequences verified?"
-          ],
-          "evidence": [
-            "Power tree",
-            "Measured Bode and sequencing data",
-            "WCCA report",
-            "Fault-injection records"
-          ],
-          "threshold": [
-            "Phase margin ≥45°, gain margin ≥6 dB",
-            "Limit breaches on critical rails are closed and documented"
-          ]
-        }
-      }
-    },
+    
     {
       "id": "design-3-3-pdn-si-pi-联合仿真",
       "text": {

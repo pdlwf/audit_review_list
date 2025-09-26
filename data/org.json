@@ -12,8 +12,8 @@
     {
       "id": "org-1-组织边界与职责清晰度-r-r-跨团队接口-是否有正式组织架构-跨团队接口定义与升级路径",
       "text": {
-        "zh": "#1 组织边界与职责清晰度（R&R、跨团队接口） 是否有正式组织架构、跨团队接口定义与升级路径？",
-        "en": "#1 Organizational boundaries & role clarity (R&R, cross-team interfaces): Do we maintain a formal org structure, defined interfaces, and escalation paths?"
+        "zh": "组织边界与职责清晰度（R&R、跨团队接口） 是否有正式组织架构、跨团队接口定义与升级路径？",
+        "en": "Organizational boundaries & role clarity (R&R, cross-team interfaces): Do we maintain a formal org structure, defined interfaces, and escalation paths?"
       },
       "rubric": {
         "zh": {
@@ -75,8 +75,8 @@
     {
       "id": "org-2-关键岗位胜任力矩阵-rf-camera-emc-热-可靠性-关键岗位是否具备胜任力矩阵与资格认证",
       "text": {
-        "zh": "#2 关键岗位胜任力矩阵（RF/Camera/EMC/热/可靠性） 关键岗位是否具备胜任力矩阵与资格认证？",
-        "en": "#2 Critical-role competency matrix (RF/Camera/EMC/Thermal/Reliability): Do critical roles maintain competency matrices and certifications?"
+        "zh": "关键岗位胜任力矩阵（RF/Camera/EMC/热/可靠性） 关键岗位是否具备胜任力矩阵与资格认证？",
+        "en": "Critical-role competency matrix (RF/Camera/EMC/Thermal/Reliability): Do critical roles maintain competency matrices and certifications?"
       },
       "rubric": {
         "zh": {
@@ -97,100 +97,58 @@
       "meta": {
         "zh": {
           "focus": [
-            "稳态+瞬态 CFD 模型",
-            "测温点校准与偏差控制",
-            "散热材料与节流策略",
-            "关键场景功耗输入",
-            "3D EM 与整机耦合分析",
-            "TRP/TIS 预算与余量",
-            "结构变更触发复核",
-            "SAR/一致性评估",
-            "功能/性能/可靠性覆盖矩阵",
-            "Entry/Exit 与停线规则",
-            "缺口识别与整改计划",
-            "关键岗位胜任力模型覆盖度",
-            "认证/培训闭环",
-            "能力缺口与资源备份计划"
+            "胜任力矩阵覆盖范围与定义方法（技能项、等级）",
+            "关键岗位清单及岗位胜任标准",
+            "认证/培训计划与到期管理",
+            "能力评估频率与更新机制",
+            "与项目需求/资源排期的联动",
+            "能力缺口识别、备份人/外协池"
           ],
           "ask": [
-            "仿真实测偏差控制在多少？",
-            "节流策略触发点如何设定？",
-            "仿真与 OTA 数据如何对齐？",
-            "多姿态 OTA 结果是否满足？",
-            "矩阵如何维护并与项目联动？",
-            "Entry/Exit 判定依据是什么？",
-            "胜任力矩阵包含哪些岗位？",
-            "培训与认证记录如何管理？"
+            "胜任力矩阵多久更新一次？由谁负责？",
+            "关键岗位资格/证书如何验真与到期提醒？",
+            "如何将项目需求映射到人员胜任力？缺口如何处理（培训/招聘/外部）？",
+            "是否建立备份人与离岗替补机制？"
           ],
           "evidence": [
-            "CFD 报告与边界条件",
-            "温升测试表",
-            "节流/降额曲线",
-            "EM 仿真报告",
-            "VNA/OTA 测试数据",
-            "相关性比对记录",
-            "测试矩阵或 coverage 报告",
-            "异常整改台账",
-            "胜任力矩阵与更新记录",
-            "培训/认证计划与考试结果"
+            "胜任力矩阵样表（含技能项、等级、更新时间）",
+            "关键岗位资格清单与证书记录",
+          "培训计划、签到与考核结果",
+            "需求-人员匹配与资源排期截图",
+            "能力缺口与补齐闭环台账"
           ],
           "threshold": [
-            "触感温度满足目标",
-            "结温低于器件上限",
-            "充电热稳定验证通过",
-            "关键频段余量满足预算并留裕量",
-            "关键场景覆盖率达成且缺口闭环",
-            "关键岗位均建立胜任力要求",
-            "能力缺口形成行动并跟踪"
+            "关键岗位 100% 建立胜任力标准与覆盖",
+            "矩阵≥季度更新，证书到期预警≥30天",
+            "立项前完成需求-人员匹配并闭环缺口"
           ]
         },
         "en": {
           "focus": [
-            "Steady-state and transient CFD models",
-            "Calibration and deviation control for temperature measurement points",
-            "Thermal materials and throttling strategies",
-            "Power inputs for critical scenarios",
-            "3D EM and full-device coupling analysis",
-            "TRP/TIS budget and margin",
-            "Revalidation triggers after structural changes",
-            "SAR and consistency evaluations",
-            "Functional, performance, and reliability coverage matrix",
-            "Entry/Exit criteria and line-stop rules",
-            "Gap identification and remediation plans",
-            "Coverage of the competency model for critical roles",
-            "Training and certification closure",
-            "Capability gap and resource backup plans"
+            "Competency matrix scope & definition (skills, levels)",
+            "Critical role list and role competency standards",
+            "Certification/training plans and expiry management",
+            "Assessment cadence and update mechanism",
+            "Linkage to project demand & resource scheduling",
+            "Gap identification, backups, and external bench"
           ],
           "ask": [
-            "What deviation do you allow between simulation and measurement?",
-            "How are throttling strategy triggers defined?",
-            "How are simulation and OTA data aligned?",
-            "Do multi-posture OTA results meet expectations?",
-            "How is the matrix maintained and linked to projects?",
-            "What criteria drive Entry/Exit decisions?",
-            "Which roles are covered in the competency matrix?",
-            "How are training and certification records managed?"
+            "How often is the competency matrix updated and by whom?",
+            "How do you verify certificates and manage expiry reminders for critical roles?",
+            "How are project demands mapped to competencies? How are gaps handled (training/hiring/external)?",
+            "Is there a backup and backfill mechanism for absences?"
           ],
           "evidence": [
-            "CFD reports and boundary conditions",
-            "Temperature rise test sheets",
-            "Throttling/derating curves",
-            "EM simulation reports",
-            "VNA/OTA test data",
-            "Correlation comparison records",
-            "Test matrix or coverage reports",
-            "Exception remediation log",
-            "Competency matrix and update records",
-            "Training/certification plans and exam results"
+            "Competency matrix (skills, levels, last update)",
+            "Critical-role qualification list and certificate records",
+            "Training plans, attendance, and assessment results",
+            "Demand-to-people mapping and resource schedules",
+            "Gap remediation log with closure records"
           ],
           "threshold": [
-            "Touch temperature meets the target",
-            "Junction temperature stays below component limits",
-            "Charge thermal stability verification passed",
-            "Key frequency margins meet the budget with reserves",
-            "Coverage for critical scenarios achieved and gaps closed",
-            "Competency requirements defined for all critical roles",
-            "Capability gaps tracked with actionable plans"
+            "100% of critical roles have defined competency standards and are covered",
+            "Matrix updated ≥ quarterly; certificate expiry alerts ≥ 30 days",
+            "Demand-to-people matching done pre-kickoff; gaps closed before start"
           ]
         }
       }
@@ -198,80 +156,64 @@
     {
       "id": "org-4-领域覆盖与-dri-清单-子系统命名-dri-权限-是否维护子系统-dri-清单及权限边界",
       "text": {
-        "zh": "#4 领域覆盖与 DRI 清单（子系统命名 DRI、权限） 是否维护子系统 DRI 清单及权限边界？",
-        "en": "#4 Domain coverage & DRI roster (subsystem owners, authority): Is the subsystem DRI list maintained with clear authority boundaries?"
+        "zh": "域/子系统 DRI 覆盖：是否维护子系统 DRI 名单、权限边界与备份安排，并能随项目/变更同步更新、快速补齐覆盖缺口？",
+        "en": "Domain/subsystem DRI coverage: Do we maintain a subsystem DRI roster, authority boundaries, and backups, synchronized with changes and backfilling coverage gaps promptly?"
       },
       "rubric": {
         "zh": {
-          "1": "无 DRI 清单或仅口头指定，领域覆盖情况不透明。",
-          "2": "存在初步 DRI 名单但权限、职责或备份安排不清晰。",
-          "3": "维护正式 DRI 清单并定义权限范围，项目可查询到负责人。",
-          "4": "DRI 清单与项目/变更动态同步，覆盖缺口及时补位。",
-          "5": "DRI 清单与资源看板/排班系统集成，能力负荷与权限变更可追踪。"
+          "1": "无 DRI 清单或仅口头指定；权限边界不清；无备份安排；变更不同步。",
+          "2": "有初步 DRI 名单但覆盖不全或未定义权限/备份；更新零散；缺口补位无记录。",
+          "3": "维护正式 DRI 清单并定义权限边界与备份；项目可查询负责人；变更后在规定时间内完成更新。",
+          "4": "DRI 清单与项目/变更流程定期或自动同步（如≤48小时）；缺口补位有明确 SLA（如≤3个工作日）并留存审计记录；备份演练有效。",
+          "5": "DRI 清单与资源/排班/权限系统数据化联动；关键子系统覆盖率100%；具备缺位预测与预警，自动工单与权限同步；MTTA/MTTR 等指标可视并持续改进。"
         },
         "en": {
-          "1": "No DRI roster or only informal assignments; domain coverage is opaque.",
-          "2": "Preliminary DRI list exists but authority, responsibilities, or backups are unclear.",
-          "3": "Formal DRI roster maintained with defined authority; projects can identify the owner.",
-          "4": "DRI roster stays in sync with projects and changes, and coverage gaps are filled quickly.",
-          "5": "DRI roster integrates with resource dashboards or scheduling so workload and authority changes are traceable."
+          "1": "No DRI roster or only verbal assignments; unclear authority boundaries; no backups; changes are not synchronized.",
+          "2": "A preliminary DRI list exists but coverage is incomplete or authority/backups are undefined; updates are ad hoc; no records of gap backfilling.",
+          "3": "A formal DRI roster is maintained with defined authority boundaries and backups; owners are discoverable in projects; updates are completed within a defined window after changes.",
+          "4": "The DRI roster is regularly or automatically synchronized with projects/changes (e.g., ≤48h); gap backfilling follows a clear SLA (e.g., ≤3 business days) with audit trails; backups are exercised effectively.",
+          "5": "The DRI roster is data-linked to resourcing/scheduling/permission systems; 100% coverage on critical subsystems; proactive absence prediction and alerts; auto work orders and permission sync; MTTA/MTTR and similar metrics are visible with continuous improvement."
         }
       },
       "meta": {
         "zh": {
           "focus": [
-            "组织架构与岗位说明书是否发布",
-            "跨团队接口人和升级路径是否明确",
-            "职责边界与权限如何维护",
-            "子系统 DRI 清单准确性",
-            "权限与备份机制",
-            "变更同步与覆盖缺口"
+            "子系统清单与命名规范",
+            "DRI 权限边界、备份人/排班",
+            "变更同步与缺口补位时效"
           ],
           "ask": [
-            "组织架构多长时间更新一次？",
-            "跨团队升级路径和 SLA 如何定义？",
-            "DRI 清单如何维护和发布？",
-            "变更时如何确认 DRI 覆盖？"
+            "过去一个月有哪些 DRI 变更？如何通知并生效？",
+            "DRI 缺位时如何在多长时间内补位？"
           ],
           "evidence": [
-            "最新组织架构图与岗位说明",
-            "接口/升级流程记录",
-            "DRI 名单与权限说明",
-            "变更同步或排班记录"
+            "DRI 名单（含权限/备份/排班）",
+            "变更同步记录与发布渠道",
+            "缺口补位台账与时效统计"
           ],
           "threshold": [
-            "组织职责发布并可查询",
-            "升级路径在项目中可验证",
-            "关键子系统均指定 DRI",
-            "缺口补位有记录并闭环"
+            "关键子系统 100% 指定 DRI",
+            "备份命中率≥X%，补位≤Y 天"
           ]
         },
         "en": {
           "focus": [
-            "Whether the org chart and job descriptions are published",
-            "Whether cross-team interface owners and escalation paths are explicit",
-            "How role boundaries and permissions are managed",
-            "Accuracy of the subsystem DRI roster",
-            "Authority and backup mechanisms",
-            "Change synchronization and coverage gaps"
+            "Subsystem inventory & naming",
+            "DRI authority boundaries, backups/roster",
+            "Change sync and gap backfilling SLA"
           ],
           "ask": [
-            "How often is the org chart updated?",
-            "How are cross-team escalation paths and SLAs defined?",
-            "How is the DRI roster maintained and published?",
-            "How do you confirm DRI coverage when changes occur?"
+            "Which DRI changes occurred last month? How were they communicated and enforced?",
+            "When a DRI is unavailable, what is the SLA for backfilling?"
           ],
           "evidence": [
-            "Latest org chart and job descriptions",
-            "Interface/escalation process records",
-            "DRI roster and permission statements",
-            "Change synchronization or scheduling records"
+            "DRI roster (authority/backups/schedule)",
+            "Change sync records & comms",
+            "Gap backfilling log with timing stats"
           ],
           "threshold": [
-            "Role responsibilities are published and discoverable",
-            "Escalation paths can be validated in projects",
-            "Every critical subsystem has an assigned DRI",
-            "Coverage gaps are logged and closed"
+            "100% DRI assignment on critical subsystems",
+            "Backup hit rate ≥ X%, backfill within ≤ Y days"
           ]
         }
       }
@@ -279,8 +221,8 @@
     {
       "id": "org-5-技术治理与决策边界-drb-ccb-stop-build-建议权-技术治理机制是否有效运行",
       "text": {
-        "zh": "#5 技术治理与决策边界（DRB/CCB、Stop-Build 建议权） 技术治理机制是否有效运行？",
-        "en": "#5 Technical governance & decision boundaries (DRB/CCB, stop-build authority): Does the technical governance mechanism operate effectively?"
+        "zh": "技术治理与决策边界（DRB/CCB、Stop-Build 建议权） 技术治理机制是否有效运行？",
+        "en": "Technical governance & decision boundaries (DRB/CCB, stop-build authority): Does the technical governance mechanism operate effectively?"
       },
       "rubric": {
         "zh": {

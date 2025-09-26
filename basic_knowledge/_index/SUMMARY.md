@@ -1,6 +1,6 @@
 # Method Framework Knowledge Base
 
-_Last build: 2025-09-19T05:55:48+00:00_
+_Last build: 2025-09-19T14:27:37+00:00_
 
 **Total items:** 4
 
@@ -23,3 +23,8 @@ _Last build: 2025-09-19T05:55:48+00:00_
 - 2025-09-19T04:01:21+00:00: **5 Whys Method** (added) [root_cause_analysis.md](basic_knowledge/method_frame/_samples/root_cause_analysis.md#5-whys-method)
 - 2025-09-19T04:01:21+00:00: **RICE Scoring Model** (added) [prioritization.md](basic_knowledge/method_frame/_samples/prioritization.md#rice-scoring-model)
 - 2025-09-19T04:01:21+00:00: **Impact Effort Matrix Method** (added) [prioritization.md](basic_knowledge/method_frame/_samples/prioritization.md#impact-effort-matrix-method)
+
+## PDF Extraction Summary
+
+PDF files: 2 | ok: 2 | short: 0 | error: 0
+Backends: pypdf (2)

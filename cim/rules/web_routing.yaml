@@ -1,0 +1,15 @@
+name: web_routing
+when:
+  file:
+    include:
+      - "routes/**/*.ts"
+      - "routes/**/*.tsx"
+addsEdges:
+  - to: "pages/**/*.tsx"
+    kind: rule
+    strength: weak
+    note: "Route changes may impact page components and navigation UI."
+  - to: "components/**/*"
+    kind: rule
+    strength: weak
+    note: "Routing often touches shared layout and navigation components."

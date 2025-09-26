@@ -1,0 +1,19 @@
+name: api_contract
+when:
+  file:
+    include:
+      - "api/**/*.ts"
+      - "api/**/*.py"
+addsEdges:
+  - to: "hooks/**/*"
+    kind: rule
+    strength: weak
+    note: "API changes ripple to hooks and query abstractions"
+  - to: "services/**/*"
+    kind: rule
+    strength: weak
+    note: "Service layers often share API contracts"
+  - to: "pages/**/*"
+    kind: rule
+    strength: weak
+    note: "Expose contract shifts to user-facing pages"
